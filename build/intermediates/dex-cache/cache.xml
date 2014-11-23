@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pre-dex-items>
+
+    <item
+        dex="/Users/paolomorgano/Development/Projects/DailySelfie/DailySelfie/build/intermediates/pre-dexed/debug/internal_impl-20.0.0-9963458b37f672ccea2dc7d9a43bade41f28a2fa.jar"
+        jar="/Users/paolomorgano/Development/Projects/DailySelfie/DailySelfie/build/intermediates/exploded-aar/com.android.support/support-v4/20.0.0/libs/internal_impl-20.0.0.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="e40b3078e3fbd353c9f44da8df25a8fc0078209d"/>
+    <item
+        dex="/Users/paolomorgano/Development/Projects/DailySelfie/DailySelfie/build/intermediates/pre-dexed/debug/classes-8964a47fa7721da7bff761b7b10f4266870fe2ea.jar"
+        jar="/Users/paolomorgano/Development/Projects/DailySelfie/DailySelfie/build/intermediates/exploded-aar/com.android.support/support-v4/20.0.0/classes.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="8694693636ab36910c8100ce527c258ff3ebece0"/>
+    <item
+        dex="/Users/paolomorgano/Development/Projects/DailySelfie/DailySelfie/build/intermediates/pre-dexed/debug/support-annotations-20.0.0-a1a220b7aac48702fa766f80880ccb34fc16f314.jar"
+        jar="/Users/paolomorgano/Development/adt-bundle-mac-x86_64-20140702/sdk/extras/android/m2repository/com/android/support/support-annotations/20.0.0/support-annotations-20.0.0.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="9d9013e9ff35fc3756411e62873c363c70c638fa"/>
+
+</pre-dex-items>

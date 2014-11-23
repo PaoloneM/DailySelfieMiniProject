@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">DailySelfie</string>
+    <string name="title_selfie_detail">Selfie Detail</string>
+
+    <string name="recent_selfies_group">Latest</string>
+    <string name="last_month_selfies_group">Last Month</string>
+    <string name="older_selfies_group">Older</string>
+
+    <string name="list_item_place_default">Nowhere</string>
+    <string name="list_item_date_default">No-time</string>
+
+</resources>
