@@ -10,20 +10,26 @@ package com.paolone.dailyselfie;
 public final class R {
     public static final class attr {
     }
+    public static final class color {
+        public static final int light_grey=0x7f040000;
+    }
     public static final class drawable {
         public static final int ic_launcher=0x7f020000;
-        public static final int selfie_place_holder=0x7f020001;
+        public static final int ic_menu_camera=0x7f020001;
+        public static final int selfie_place_holder=0x7f020002;
     }
     public static final class id {
-        public static final int SelfiesExpandableView=0x7f060004;
-        public static final int SelfiesListLayout=0x7f060003;
-        public static final int group_text=0x7f060005;
-        public static final int selfieListItemDateView=0x7f060007;
-        public static final int selfieListItemPlaceView=0x7f060008;
-        public static final int selfieListItemThumbView=0x7f060006;
-        public static final int selfie_detail=0x7f060002;
-        public static final int selfie_fragment_container=0x7f060001;
-        public static final int selfie_list=0x7f060000;
+        public static final int SelfiesExpandableView=0x7f080004;
+        public static final int SelfiesListLayout=0x7f080003;
+        public static final int action_settings=0x7f08000a;
+        public static final int action_shoot=0x7f080009;
+        public static final int group_text=0x7f080005;
+        public static final int selfieListItemDateView=0x7f080007;
+        public static final int selfieListItemPlaceView=0x7f080008;
+        public static final int selfieListItemThumbView=0x7f080006;
+        public static final int selfie_detail=0x7f080002;
+        public static final int selfie_fragment_container=0x7f080001;
+        public static final int selfie_list=0x7f080000;
     }
     public static final class layout {
         public static final int activity_selfie_list=0x7f030000;
@@ -34,14 +40,19 @@ public final class R {
         public static final int group_item=0x7f030005;
         public static final int selfie_list_item_layout=0x7f030006;
     }
+    public static final class menu {
+        public static final int dailyselfiemainactivity_menu=0x7f070000;
+    }
     public static final class string {
-        public static final int app_name=0x7f040000;
-        public static final int last_month_selfies_group=0x7f040001;
-        public static final int list_item_date_default=0x7f040002;
-        public static final int list_item_place_default=0x7f040003;
-        public static final int older_selfies_group=0x7f040004;
-        public static final int recent_selfies_group=0x7f040005;
-        public static final int title_selfie_detail=0x7f040006;
+        public static final int action_settings=0x7f050000;
+        public static final int action_shoot=0x7f050001;
+        public static final int app_name=0x7f050002;
+        public static final int last_month_selfies_group=0x7f050003;
+        public static final int list_item_date_default=0x7f050004;
+        public static final int list_item_place_default=0x7f050005;
+        public static final int older_selfies_group=0x7f050006;
+        public static final int recent_selfies_group=0x7f050007;
+        public static final int title_selfie_detail=0x7f050008;
     }
     public static final class style {
         /** 
@@ -52,9 +63,9 @@ public final class R {
  API 11 theme customizations can go here. 
  API 14 theme customizations can go here. 
          */
-        public static final int AppBaseTheme=0x7f050000;
+        public static final int AppBaseTheme=0x7f060000;
         /**  All customizations that are NOT specific to a particular API-level can go here. 
          */
-        public static final int AppTheme=0x7f050001;
+        public static final int AppTheme=0x7f060001;
     }
 }

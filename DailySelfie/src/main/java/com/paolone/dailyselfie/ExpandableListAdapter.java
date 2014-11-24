@@ -13,13 +13,34 @@ import android.widget.TextView;
 
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
+    /*****************************************
+     *              CONSTANTS                *
+     *****************************************/
+    /*****************************************
+     *                FIELDS                 *
+     *****************************************/
+
     private final LayoutInflater inf;
     private SparseArray<SelfiesGroup> groups;
+
+    private class ViewHolder {
+        TextView date;
+        TextView place;
+        ImageView thumb;
+    }
+
+    /*****************************************
+     *              CONSTRUCTOR              *
+     *****************************************/
 
     public ExpandableListAdapter(SparseArray<SelfiesGroup> groups, Context context) {
         this.groups = groups;
         inf = LayoutInflater.from(context);
     }
+
+    /*****************************************
+     *          ADAPTER LIFECYCLE            *
+     *****************************************/
 
     @Override
     public int getGroupCount() {
@@ -109,9 +130,4 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         return true;
     }
 
-    private class ViewHolder {
-        TextView date;
-        TextView place;
-        ImageView thumb;
-    }
 }

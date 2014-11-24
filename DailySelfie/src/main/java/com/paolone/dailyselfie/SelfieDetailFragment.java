@@ -31,7 +31,7 @@ public class SelfieDetailFragment extends Fragment {
 
     // The dummy content this fragment is presenting.
     private DummyContent.DummyItem mItem;
-    private String DummyString;
+    private String mDetailText;
     // Mandatory empty constructor for the fragment manager to instantiate the fragment
     // (e.g. upon screen orientation changes).
     public SelfieDetailFragment() {
@@ -56,7 +56,8 @@ public class SelfieDetailFragment extends Fragment {
             // to load content from a content provider.
             int argumentGroup = getArguments().getInt(ARG_GROUP_ID);
             int argumentChild = getArguments().getInt(ARG_CHILD_ID);
-            DummyString = DummyContent.childData[argumentGroup][argumentChild];
+            int mChildId =SelfiesContent.mGroups.get(argumentGroup).children.get(argumentChild);
+            mDetailText = SelfiesContent.mChildList.get(mChildId).getDate().toString();
         }
     }
 
@@ -69,8 +70,8 @@ public class SelfieDetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_selfie_detail, container, false);
 
         // Show the dummy content as date in a TextView.
-        if (DummyString != null) {
-            ((TextView) rootView.findViewById(R.id.selfie_detail)).setText(DummyString);
+        if (mDetailText != null) {
+            ((TextView) rootView.findViewById(R.id.selfie_detail)).setText(mDetailText);
         }
 
         return rootView;

@@ -4,10 +4,13 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.text.format.DateUtils;
+import android.widget.Toast;
 
 import java.io.File;
 import java.text.ParseException;
@@ -65,7 +68,7 @@ public class DailySelfieMainActivity extends Activity
     private String mLastSelectedPosition = null;
 
     /*****************************************
-     *          ATIVITY LIFECYCLE            *
+     *          ACTIVITY LIFECYCLE           *
      *****************************************/
 
     @Override
@@ -102,24 +105,52 @@ public class DailySelfieMainActivity extends Activity
         }
 
     }
-    
+
+    // Menu creation callback
+    // Create Options Menu
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.dailyselfiemainactivity_menu, menu);
+        return true;
+
+    }
+
     // Menu selected item callback
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         int id = item.getItemId();
-        if (id == android.R.id.home) {
-            // This ID represents the Home or Up button. In the case of this
-            // activity, the Up button is shown. Use NavUtils to allow users
-            // to navigate up one level in the application structure. For
-            // more details, see the Navigation pattern on Android Design:
-            //
-            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
-            //
-        	getActionBar().setDisplayHomeAsUpEnabled(false);
-        	getFragmentManager().popBackStack();
-            return true;
+
+        switch (id){
+
+            // Action's bar home button
+            case android.R.id.home:
+                // This ID represents the Home or Up button. In the case of this
+                // activity, the Up button is shown. Use NavUtils to allow users
+                // to navigate up one level in the application structure. For
+                // more details, see the Navigation pattern on Android Design:
+                //
+                // http://developer.android.com/design/patterns/navigation.html#up-vs-back
+                //
+                getActionBar().setDisplayHomeAsUpEnabled(false);
+                getFragmentManager().popBackStack();
+                return true;
+
+            // Action bar camera button
+            case R.id.action_shoot:
+                Toast.makeText(getApplicationContext(), "Click!", Toast.LENGTH_LONG).show();
+                return true;
+
+            case R.id.action_settings:
+                Toast.makeText(getApplicationContext(), "Settings", Toast.LENGTH_LONG).show();
+                return true;
+
         }
+
         return super.onOptionsItemSelected(item);
+
     }
 
     // Saved Instance Management

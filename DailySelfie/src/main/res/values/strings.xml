@@ -11,4 +11,7 @@
     <string name="list_item_place_default">Nowhere</string>
     <string name="list_item_date_default">No-time</string>
 
+    <string name="action_shoot">Shoot selfie!</string>
+    <string name="action_settings">Settings</string>
+
 </resources>
