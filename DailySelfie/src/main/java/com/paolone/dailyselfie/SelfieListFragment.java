@@ -46,6 +46,7 @@ public class SelfieListFragment extends Fragment {
 
     private ExpandableListView selfiesExpandableList;
     private View rootView;
+    private ExpandableListAdapter mSelfieListAdaper;
 
     /*****************************************
      *                INTERFACES             *
@@ -112,7 +113,8 @@ public class SelfieListFragment extends Fragment {
         // Get a reference to the ExpandableListView of previously inflated layout and set the
         // adapter and onClick callbacks
         selfiesExpandableList = (ExpandableListView) view.findViewById(R.id.SelfiesExpandableView);
-        selfiesExpandableList.setAdapter(new ExpandableListAdapter(SelfiesContent.mGroups, view.getContext()));
+        mSelfieListAdaper = new ExpandableListAdapter(SelfiesContent.mGroups, view.getContext());
+        selfiesExpandableList.setAdapter(mSelfieListAdaper);
         selfiesExpandableList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView expandableListView, View view, int i, int i2, long l) {
@@ -170,6 +172,16 @@ public class SelfieListFragment extends Fragment {
     }
 
     /*****************************************
+     *           EXPOSED METHODS             *
+     *****************************************/
+
+    public boolean refreshList(){
+
+        mSelfieListAdaper.notifyDataSetChanged();
+        return true;
+
+    }
+    /*****************************************
      *           SUPPORT METHODS             *
      *****************************************/
 
@@ -192,6 +204,8 @@ public class SelfieListFragment extends Fragment {
 
         mActivatedPosition = position;
     }
+
+
 
     // *** END OF CLASS ***
 

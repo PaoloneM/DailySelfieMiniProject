@@ -2,6 +2,7 @@ package com.paolone.dailyselfie;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -76,6 +77,10 @@ public class DailySelfieMainActivity extends Activity
     // Picture related fields
     private String mCurrentPhotoPath;
     private String mImageFileName;
+    private String mTimeStamp;
+    private Date mSelfieTime;
+    private Location mSelfieLocation = null;
+    private File mImageFile;
 
     /*****************************************
      *          ACTIVITY LIFECYCLE           *
@@ -178,9 +183,12 @@ public class DailySelfieMainActivity extends Activity
             }
 
             Toast.makeText(getApplicationContext(), "WoW! You look great!!!!", Toast.LENGTH_LONG).show();
+            createNewSelfie(mSelfieTime, mSelfieLocation, mImageFile);
+            updateDisplaiedData();
 
         }
     }
+
     // Saved Instance Management
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -414,41 +422,72 @@ public class DailySelfieMainActivity extends Activity
     // Dispatch intent for taking pictures
 
     private void dispatchTakePictureIntent() {
+
+        Log.i(TAG, "DailySelfieMainActivity.dispatchTakePictureIntent entered");
+
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
         // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             // Create the File where the photo should go
             File photoFile = null;
+
             try {
                 photoFile = createImageFile();
             } catch (IOException ex) {
                 // Error occurred while creating the File
+                Log.i(TAG, "DailySelfieMainActivity.dispatchTakePictureIntent: unable to create file");
                 ex.printStackTrace();
             }
+
             // Continue only if the File was successfully created
             if (photoFile != null) {
+
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
                         Uri.fromFile(photoFile));
+                Log.i(TAG, "DailySelfieMainActivity.dispatchTakePictureIntent: launch intent!");
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+
+            } else {
+
+                Log.i(TAG, "DailySelfieMainActivity.dispatchTakePictureIntent: file not found");
+
             }
+
         }
     }
 
     private File createImageFile() throws IOException {
         // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        mImageFileName = FILE_RADIX + "_" + timeStamp;
+        mSelfieTime = new Date();
+        mTimeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(mSelfieTime);
+        mImageFileName = FILE_RADIX + "_" + mTimeStamp;
         File storageDir = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
+        mImageFile = File.createTempFile(
                 mImageFileName,  /* prefix */
                 ".jpg",         /* suffix */
                 storageDir      /* directory */
         );
 
         // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
-        return image;
+        mCurrentPhotoPath = "file:" + mImageFile.getAbsolutePath();
+        return mImageFile;
+    }
+
+    // Create new data item
+    private boolean createNewSelfie(Date selfieTime, Location selfieLocation, File imageFile){
+        Log.i(TAG, "DailySelfieMainActivity.createNewSelfie entered");
+        SelfiesContent.addSelfie(selfieTime, selfieLocation, imageFile);
+        return true;
+    }
+
+    // Order selfies data and update display
+    private void updateDisplaiedData() {
+
+        mapDummyData(SelfiesContent.mGroups, SelfiesContent.mChildList);
+        mSelfieListFragment.refreshList();
+
     }
 
     // *** END OF CLASS ***
