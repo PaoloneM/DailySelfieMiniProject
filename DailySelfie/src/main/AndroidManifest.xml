@@ -22,14 +22,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".SelfieDetailActivity"
-            android:label="@string/title_selfie_detail"
-            android:parentActivityName=".DailySelfieMainActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.paolone.dailyselfie.SelfieListActivity" />
-        </activity>
     </application>
+
+    <uses-feature android:name="android.hardware.camera"
+                  android:required="true" />
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
 
 </manifest>

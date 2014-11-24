@@ -1,6 +1,10 @@
 package com.paolone.dailyselfie;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.util.SparseArray;
@@ -13,6 +17,7 @@ import android.text.format.DateUtils;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -53,8 +58,10 @@ public class DailySelfieMainActivity extends Activity
     // Times
     private static final long ONE_WEEK = 1000L * 60L * 60L * 24L * 7L;
     private static final long ONE_MONTH = 1000L * 60L * 60L * 24L * 30L;
+    // Camera management
+    static final int REQUEST_IMAGE_CAPTURE = 1;
 
-	/*****************************************
+    /*****************************************
 	 *                FIELDS                 *
 	 *****************************************/
 	// layout type flag
@@ -66,6 +73,9 @@ public class DailySelfieMainActivity extends Activity
     private SelfieListFragment mSelfieListFragment = null;
     // currently selected item pointer
     private String mLastSelectedPosition = null;
+    // Picture related fields
+    private String mCurrentPhotoPath;
+    private String mImageFileName;
 
     /*****************************************
      *          ACTIVITY LIFECYCLE           *
@@ -140,11 +150,12 @@ public class DailySelfieMainActivity extends Activity
 
             // Action bar camera button
             case R.id.action_shoot:
-                Toast.makeText(getApplicationContext(), "Click!", Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(), "Click!", Toast.LENGTH_LONG).show();
+                dispatchTakePictureIntent();
                 return true;
 
             case R.id.action_settings:
-                Toast.makeText(getApplicationContext(), "Settings", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), getString(R.string.action_settings_message), Toast.LENGTH_LONG).show();
                 return true;
 
         }
@@ -153,6 +164,23 @@ public class DailySelfieMainActivity extends Activity
 
     }
 
+    // Camera activity result callback
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+
+            if (data != null) {
+
+                Bundle extras = data.getExtras();
+                Bitmap imageBitmap = (Bitmap) extras.get("data");
+                //mImageView.setImageBitmap(imageBitmap);
+            }
+
+            Toast.makeText(getApplicationContext(), "WoW! You look great!!!!", Toast.LENGTH_LONG).show();
+
+        }
+    }
     // Saved Instance Management
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -383,6 +411,45 @@ public class DailySelfieMainActivity extends Activity
 
     }
 
+    // Dispatch intent for taking pictures
+
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+                ex.printStackTrace();
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+                        Uri.fromFile(photoFile));
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
+        }
+    }
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        mImageFileName = FILE_RADIX + "_" + timeStamp;
+        File storageDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                mImageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
+        return image;
+    }
 
     // *** END OF CLASS ***
 }

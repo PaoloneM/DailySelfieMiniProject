@@ -45,14 +45,15 @@ public final class R {
     }
     public static final class string {
         public static final int action_settings=0x7f050000;
-        public static final int action_shoot=0x7f050001;
-        public static final int app_name=0x7f050002;
-        public static final int last_month_selfies_group=0x7f050003;
-        public static final int list_item_date_default=0x7f050004;
-        public static final int list_item_place_default=0x7f050005;
-        public static final int older_selfies_group=0x7f050006;
-        public static final int recent_selfies_group=0x7f050007;
-        public static final int title_selfie_detail=0x7f050008;
+        public static final int action_settings_message=0x7f050001;
+        public static final int action_shoot=0x7f050002;
+        public static final int app_name=0x7f050003;
+        public static final int last_month_selfies_group=0x7f050004;
+        public static final int list_item_date_default=0x7f050005;
+        public static final int list_item_place_default=0x7f050006;
+        public static final int older_selfies_group=0x7f050007;
+        public static final int recent_selfies_group=0x7f050008;
+        public static final int title_selfie_detail=0x7f050009;
     }
     public static final class style {
         /** 
