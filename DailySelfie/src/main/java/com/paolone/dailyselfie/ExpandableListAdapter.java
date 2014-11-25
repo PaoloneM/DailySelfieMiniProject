@@ -1,7 +1,10 @@
 package com.paolone.dailyselfie;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +12,9 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.File;
 
 
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
@@ -16,6 +22,9 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     /*****************************************
      *              CONSTANTS                *
      *****************************************/
+    // TAG for logging
+    private static final String TAG = "Dailiy_Selfie";
+
     /*****************************************
      *                FIELDS                 *
      *****************************************/
@@ -29,6 +38,8 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         ImageView thumb;
     }
 
+    private Context mFragmentContext;
+
     /*****************************************
      *              CONSTRUCTOR              *
      *****************************************/
@@ -36,6 +47,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     public ExpandableListAdapter(SparseArray<SelfiesGroup> groups, Context context) {
         this.groups = groups;
         inf = LayoutInflater.from(context);
+        mFragmentContext = context;
     }
 
     /*****************************************
@@ -101,6 +113,9 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         holder.date.setText(mText);
         holder.thumb.setImageBitmap(BitmapFactory.decodeResource(convertView.getResources(), R.drawable.selfie_place_holder));
 
+        File selfieFile = mChildObj.getFile();
+        //new LoadSelfieTask(mFragmentContext).execute(selfieFile, holder.thumb);
+        new LoadSelfieTask(mFragmentContext).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, selfieFile, holder.thumb);
         return convertView;
     }
 
@@ -124,6 +139,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
         return convertView;
     }
+
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {

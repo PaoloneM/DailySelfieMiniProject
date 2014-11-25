@@ -14,7 +14,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.app.Activity;
 import android.app.FragmentTransaction;
-import android.text.format.DateUtils;
 import android.widget.Toast;
 
 import java.io.File;
@@ -98,7 +97,7 @@ public class DailySelfieMainActivity extends Activity
         mTwoPane = isInTwoPaneMode();
 
         createDummyData(SelfiesContent.mChildList);
-        mapDummyData(SelfiesContent.mGroups, SelfiesContent.mChildList);
+        mapData(SelfiesContent.mGroups, SelfiesContent.mChildList);
 
         // Manage different layouts based on device size
         fragmentsInit(mTwoPane, savedInstanceState);
@@ -415,7 +414,7 @@ public class DailySelfieMainActivity extends Activity
 
     }
 
-    private void mapDummyData(SparseArray<SelfiesGroup> groups, ArrayList<SelfieItem> mChildList) {
+    private void mapData(SparseArray<SelfiesGroup> groups, ArrayList<SelfieItem> mChildList) {
 
     	// Create 3 groups
         SelfiesGroup mLatestSelfies = new SelfiesGroup(getString(R.string.recent_selfies_group));
@@ -527,7 +526,7 @@ public class DailySelfieMainActivity extends Activity
 
         Log.i(TAG, "DailySelfieMainActivity.updateDisplayedData entered");
 
-        mapDummyData(SelfiesContent.mGroups, SelfiesContent.mChildList);
+        mapData(SelfiesContent.mGroups, SelfiesContent.mChildList);
         mSelfieListFragment.refreshList();
 
     }

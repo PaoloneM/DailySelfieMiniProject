@@ -1,5 +1,6 @@
 package com.paolone.dailyselfie;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.Fragment;
@@ -7,9 +8,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.paolone.dailyselfie.dummy.DummyContent;
+
+import java.io.File;
 
 /**
  * A fragment representing a single Selfie detail screen.
@@ -29,16 +33,18 @@ public class SelfieDetailFragment extends Fragment {
     public static final String ARG_GROUP_ID = "group_id";
     public static final String ARG_CHILD_ID = "child_id";
 
-    // The dummy content this fragment is presenting.
-    private DummyContent.DummyItem mItem;
-    private String mDetailText;
+    /*****************************************
+     *                FIELDS                 *
+     *****************************************/
+    // The image file this fragment is presenting.
+    private File mDetailFile;
+
+    /*****************************************
+     *              CONSTRUCTOR              *
+     *****************************************/
     // Mandatory empty constructor for the fragment manager to instantiate the fragment
     // (e.g. upon screen orientation changes).
-    public SelfieDetailFragment() {
-    	
-    	Log.i(TAG, "SelfieDetailFragment constructor entered");
-    	
-    }
+    public SelfieDetailFragment() { Log.i(TAG, "SelfieDetailFragment constructor entered"); }
     
     /*****************************************
      *          FRAGMENT LIFECYCLE           *
@@ -51,14 +57,15 @@ public class SelfieDetailFragment extends Fragment {
         Log.i(TAG, "SelfieDetailFragment.onCreate entered");
         
         if (getArguments().containsKey(ARG_GROUP_ID)) {
-            // Load the dummy content specified by the fragment
-            // arguments. In a real-world scenario, use a Loader
-            // to load content from a content provider.
+            // Load the content specified by the fragment
+            // arguments.
             int argumentGroup = getArguments().getInt(ARG_GROUP_ID);
             int argumentChild = getArguments().getInt(ARG_CHILD_ID);
             int mChildId =SelfiesContent.mGroups.get(argumentGroup).children.get(argumentChild);
-            mDetailText = SelfiesContent.mChildList.get(mChildId).getDate().toString();
+            // Save filename of image file
+            mDetailFile = SelfiesContent.mChildList.get(mChildId).getFile();
         }
+
     }
 
     @Override
@@ -69,12 +76,12 @@ public class SelfieDetailFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_selfie_detail, container, false);
 
-        // Show the dummy content as date in a TextView.
-        if (mDetailText != null) {
-            ((TextView) rootView.findViewById(R.id.selfie_detail)).setText(mDetailText);
-        }
+        // Show the image
+        if (mDetailFile != null)
+            ((ImageView) rootView.findViewById(R.id.selfie_detail)).setImageURI(Uri.fromFile(mDetailFile));
 
         return rootView;
+
     }
     
 	@Override
