@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -105,6 +104,42 @@ public class DailySelfieMainActivity extends Activity
         fragmentsInit(mTwoPane, savedInstanceState);
 
         // TODO: If exposing deep links into your app, handle intents here.
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.i(TAG, "DailySelfieMainActivity.onStart entered");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.i(TAG, "DailySelfieMainActivity.onResume entered");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.i(TAG, "DailySelfieMainActivity.onPause entered");
+   }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.i(TAG, "DailySelfieMainActivity.onStop entered");
+    }
+
+    @Override
+    public void onRestart() {
+        super.onRestart();
+        Log.i(TAG, "DailySelfieMainActivity.onRestart entered");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.i(TAG, "DailySelfieMainActivity.onDestroy entered");
     }
 
     // Callback method from  SelfieListFragment.Callbacks}
@@ -301,6 +336,8 @@ public class DailySelfieMainActivity extends Activity
 
     private void createDummyData(ArrayList<SelfieItem> childList) {
 
+        // TODO: clean old data befor adding
+
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
         Date mDate = null;
@@ -477,13 +514,18 @@ public class DailySelfieMainActivity extends Activity
 
     // Create new data item
     private boolean createNewSelfie(Date selfieTime, Location selfieLocation, File imageFile){
+
         Log.i(TAG, "DailySelfieMainActivity.createNewSelfie entered");
+
         SelfiesContent.addSelfie(selfieTime, selfieLocation, imageFile);
+
         return true;
     }
 
     // Order selfies data and update display
     private void updateDisplaiedData() {
+
+        Log.i(TAG, "DailySelfieMainActivity.updateDisplayedData entered");
 
         mapDummyData(SelfiesContent.mGroups, SelfiesContent.mChildList);
         mSelfieListFragment.refreshList();
