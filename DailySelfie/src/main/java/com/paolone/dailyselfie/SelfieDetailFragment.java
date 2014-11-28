@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -77,9 +79,14 @@ public class SelfieDetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_selfie_detail, container, false);
 
         // Show the image
-        if (mDetailFile != null)
-            ((ImageView) rootView.findViewById(R.id.selfie_detail)).setImageURI(Uri.fromFile(mDetailFile));
-
+        if (mDetailFile != null) {
+            WebView mImageWebView;
+            mImageWebView = ((WebView) rootView.findViewById(R.id.selfie_detail));
+            mImageWebView.getSettings().setBuiltInZoomControls(true);
+            mImageWebView.getSettings().setLoadWithOverviewMode(true);
+            mImageWebView.getSettings().setUseWideViewPort(true);
+            mImageWebView.loadUrl("file://" + mDetailFile.toString());
+        }
         return rootView;
 
     }

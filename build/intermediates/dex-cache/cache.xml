@@ -8,6 +8,12 @@
         revision="20.0.0"
         sha1="962e8b12569c56dbdcf8367eb4eac8bb129cd18f"/>
     <item
+        dex="/Users/pmorgano/Documents/CorsoAndroid/DailySelfieMiniProject/DailySelfie/build/intermediates/pre-dexed/debug/json-simple-1.1-ff9c1fd11186fc4c1d8ac190f9cfc771e1bccbf7.jar"
+        jar="/Users/pmorgano/.gradle/caches/modules-2/files-2.1/com.googlecode.json-simple/json-simple/1.1/5e303a03d04e6788dddfa3655272580ae0fc13bb/json-simple-1.1.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="5e303a03d04e6788dddfa3655272580ae0fc13bb"/>
+    <item
         dex="/Users/pmorgano/Documents/CorsoAndroid/DailySelfieMiniProject/DailySelfie/build/intermediates/pre-dexed/debug/classes-57caa0dfa3fb9c6efa9a7f5b8059c04cf130045f.jar"
         jar="/Users/pmorgano/Documents/CorsoAndroid/DailySelfieMiniProject/DailySelfie/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.2/classes.jar"
         jumboMode="false"
@@ -19,5 +25,17 @@
         jumboMode="false"
         revision="20.0.0"
         sha1="99373741f99a0556ee293c41e8faa1ca3ae8a4e6"/>
+    <item
+        dex="/Users/pmorgano/Documents/CorsoAndroid/DailySelfieMiniProject/DailySelfie/build/intermediates/pre-dexed/debug/gson-2.3.1-61806ff5b734b35f6df496f6471959ab8bac8071.jar"
+        jar="/Users/pmorgano/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.3.1/ecb6e1f8e4b0e84c4b886c2f14a1500caf309757/gson-2.3.1.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="ecb6e1f8e4b0e84c4b886c2f14a1500caf309757"/>
+    <item
+        dex="/Users/pmorgano/Documents/CorsoAndroid/DailySelfieMiniProject/DailySelfie/build/intermediates/pre-dexed/debug/org.json.simple-0.4-5a3d4266086efb5ae504775f9442096dfce11cdd.jar"
+        jar="/Users/pmorgano/.gradle/caches/modules-2/files-2.1/org.apache.clerezza.ext/org.json.simple/0.4/6413efaf11aba2637b8a07f8b9b98c30c99643c7/org.json.simple-0.4.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="6413efaf11aba2637b8a07f8b9b98c30c99643c7"/>
 
 </pre-dex-items>

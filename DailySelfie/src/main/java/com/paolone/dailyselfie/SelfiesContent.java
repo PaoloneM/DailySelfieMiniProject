@@ -26,7 +26,7 @@ public class SelfiesContent {
     static boolean addSelfie(Date selfieDate, Location selfieLocation, File selfieFile){
 
         SelfieItem mCandidateSelfieItem = new SelfieItem(selfieDate, selfieLocation, selfieFile);
-        mChildList.add(mCandidateSelfieItem);
+        mChildList.add(0, mCandidateSelfieItem);
 
         return true;
 
