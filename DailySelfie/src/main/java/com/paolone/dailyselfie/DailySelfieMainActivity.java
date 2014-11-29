@@ -465,6 +465,8 @@ public class DailySelfieMainActivity extends Activity
         SelfiesGroup mMonthSelfies = new SelfiesGroup(getString(R.string.last_month_selfies_group));
         SelfiesGroup mOlderSelfies = new SelfiesGroup(getString(R.string.older_selfies_group));
 
+        if (mChildList == null) return;
+
         // Scan selfies to assign to the correct group
     	for (SelfieItem child: mChildList){
 
@@ -591,8 +593,11 @@ public class DailySelfieMainActivity extends Activity
         Log.i(TAG, "********** DailySelfieMainActivity.saveSelfieList entered **********");
 
         Gson gson = new GsonBuilder().create();
+        JsonArray jsArray = new JsonArray();
 
-        JsonArray jsArray = gson.toJsonTree(list).getAsJsonArray();
+        if (list != null){
+            jsArray = gson.toJsonTree(list).getAsJsonArray();
+        }
 
         JSONObject obj = new JSONObject();
 
@@ -616,7 +621,7 @@ public class DailySelfieMainActivity extends Activity
 
         Log.i(TAG, "********** DailySelfieMainActivity.loadSelfieList entered *************");
 
-        ArrayList<SelfieItem> list = null;
+        ArrayList<SelfieItem> list = new ArrayList<SelfieItem>();
 
         JSONObject jsonObject = new JSONObject();
 
