@@ -1,5 +1,7 @@
 package com.paolone.dailyselfie;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.location.Location;
@@ -21,10 +23,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.reflect.TypeToken;
 
-//import org.json.JSONArray;
 import org.json.JSONException;
-//import org.json.JSONObject;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -33,7 +32,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -103,6 +101,11 @@ public class DailySelfieMainActivity extends Activity
     private Date mSelfieTime;
     private Location mSelfieLocation = null;
     private File mImageFile;
+    private AlarmManager mAlarmManager;
+    private Intent mNotificationReceiverIntent;
+    private PendingIntent mNotificationReceiverPendingIntent;
+    private PendingIntent mLoggerReceiverPendingIntent;
+    private Intent mLoggerReceiverIntent;
 
     /*****************************************
      *          ACTIVITY LIFECYCLE           *
@@ -623,21 +626,26 @@ public class DailySelfieMainActivity extends Activity
             Log.i(TAG, "DailySelfieMainActivity.loadSelfieList: readFile trows file not found error");
         }
 
+
         String jsonArray = null;
-        try {
-            String name = (String) jsonObject.get("Name");
-            String author = (String) jsonObject.get("Author");
-            Log.i(TAG, "DailySelfieMainActivity.loadSelfieList decodes object: Author = " + author + ", name = " + name);
-            jsonArray = (String) jsonObject.get("SelfieList") ;
-            Log.i(TAG, "DailySelfieMainActivity.loadSelfieList decodes object: SelfieList = " + jsonArray.toString());
+        if (jsonObject != null) {
+            jsonArray = null;
+            try {
+                String name = (String) jsonObject.get("Name");
+                String author = (String) jsonObject.get("Author");
+                Log.i(TAG, "DailySelfieMainActivity.loadSelfieList decodes object: Author = " + author + ", name = " + name);
+                jsonArray = (String) jsonObject.get("SelfieList") ;
+                Log.i(TAG, "DailySelfieMainActivity.loadSelfieList decodes object: SelfieList = " + jsonArray.toString());
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-        if (jsonArray != null) {
+            if (jsonArray != null) {
 
-            list = new Gson().fromJson(jsonArray, new TypeToken<List<SelfieItem>>(){}.getType());
+                list = new Gson().fromJson(jsonArray, new TypeToken<List<SelfieItem>>(){}.getType());
+
+            }
 
         }
 
@@ -680,6 +688,8 @@ public class DailySelfieMainActivity extends Activity
 
         File storageFile = new File(storageDir, LIST_FILE);
 
+        if (!storageFile.exists()) return null;
+
         FileInputStream fis = new FileInputStream(storageFile);
 
         BufferedReader br = new BufferedReader(new InputStreamReader(fis));
@@ -704,6 +714,25 @@ public class DailySelfieMainActivity extends Activity
 
     }
 
+    // Alarm setup
+    private void alarmSetup(int interval){
 
+        // Get the AlarmManager Service
+        mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+        // Create PendingIntent to start the AlarmNotificationReceiver
+        mNotificationReceiverIntent = new Intent(DailySelfieMainActivity.this,
+                AlarmNotificationReceiver.class);
+        mNotificationReceiverPendingIntent = PendingIntent.getBroadcast(
+                DailySelfieMainActivity.this, 0, mNotificationReceiverIntent, 0);
+
+        // Create PendingIntent to start the AlarmLoggerReceiver
+        mLoggerReceiverIntent = new Intent(DailySelfieMainActivity.this,
+                AlarmLoggerReceiver.class);
+        mLoggerReceiverPendingIntent = PendingIntent.getBroadcast(
+                DailySelfieMainActivity.this, 0, mLoggerReceiverIntent, 0);
+
+
+    }
     // *** END OF CLASS ***
 }
