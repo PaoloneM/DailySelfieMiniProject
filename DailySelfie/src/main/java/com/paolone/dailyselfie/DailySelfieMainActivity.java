@@ -60,6 +60,9 @@ import java.util.List;
  * {@link SelfieListFragment.Callbacks} interface
  * to listen for item selections.
  */
+
+// TODO: move data management to list adapter
+    
 public class DailySelfieMainActivity extends Activity
         implements SelfieListFragment.Callbacks {
 
