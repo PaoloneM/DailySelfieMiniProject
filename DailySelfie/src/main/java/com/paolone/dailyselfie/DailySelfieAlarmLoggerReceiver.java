@@ -8,9 +8,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-public class AlarmLoggerReceiver extends BroadcastReceiver {
+public class DailySelfieAlarmLoggerReceiver extends BroadcastReceiver {
 
-    private static final String TAG = "AlarmLoggerReceiver";
+    private static final String TAG = "DailySelfieAlarmLoggerReceiver";
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.i(TAG,"Logging alarm at:" + DateFormat.getDateTimeInstance().format(new Date()));

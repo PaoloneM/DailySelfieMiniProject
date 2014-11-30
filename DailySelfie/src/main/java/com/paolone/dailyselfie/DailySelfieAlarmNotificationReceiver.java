@@ -16,15 +16,15 @@ import android.util.Log;
 import com.paolone.dailyselfie.DailySelfieMainActivity;
 import com.paolone.dailyselfie.R;
 
-public class AlarmNotificationReceiver extends BroadcastReceiver {
+public class DailySelfieAlarmNotificationReceiver extends BroadcastReceiver {
     // Notification ID to allow for future updates
     private static final int MY_NOTIFICATION_ID = 1;
-    private static final String TAG = "AlarmNotificationReceiver";
+    private static final String TAG = "DailySelfieAlarmNotificationReceiver";
 
     // Notification Text Elements
-    private final CharSequence tickerText = "Are You Playing Angry Birds Again!";
-    private final CharSequence contentTitle = "A Kind Reminder";
-    private final CharSequence contentText = "Get back to studying!!";
+    private CharSequence tickerText = "It's selfie time";
+    private CharSequence contentTitle = "Daily Selfie App";
+    private CharSequence contentText = "Take you picture now!";
 
     // Notification Action Elements
     private Intent mNotificationIntent;
@@ -37,6 +37,11 @@ public class AlarmNotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
+        Log.i(TAG, "DailySelfieAlarmNotificationReceiver.onReceive entered");
+
+        tickerText = context.getString(R.string.alarm_ticker_text);
+        contentTitle = context.getString(R.string.alarm_title_text);
+        contentText = context.getString(R.string.alarm_body_text);
         mNotificationIntent = new Intent(context, DailySelfieMainActivity.class);
         mContentIntent = PendingIntent.getActivity(context, 0,
                 mNotificationIntent, Intent.FLAG_ACTIVITY_NEW_TASK);

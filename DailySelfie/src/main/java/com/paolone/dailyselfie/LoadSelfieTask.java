@@ -110,7 +110,7 @@ public class LoadSelfieTask extends AsyncTask<Object, Integer, Bitmap> {
 
         if (result != null) {
 
-            Toast.makeText(context, "LoadSelfieTask: Image Loaded", Toast.LENGTH_LONG).show();
+            //Toast.makeText(context, "LoadSelfieTask: Image Loaded", Toast.LENGTH_LONG).show();
             mImageViewToBeUpdated.setImageBitmap(result);
 
         }

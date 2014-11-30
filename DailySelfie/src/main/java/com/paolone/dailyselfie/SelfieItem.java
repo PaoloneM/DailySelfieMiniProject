@@ -65,7 +65,7 @@ public class SelfieItem {
     }
 
     public long getSelfieAge() {
-        long mSelfieDate = this.mDate.getTime();
+        long mSelfieDate = mDate.getTime();
         long mNow = Calendar.getInstance().getTimeInMillis();
         return mNow - mSelfieDate;
     }

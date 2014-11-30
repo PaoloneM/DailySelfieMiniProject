@@ -7,6 +7,12 @@
         android:title="@string/action_shoot"
         android:showAsAction="ifRoom" />
     <!-- Settings, should always be in the overflow -->
+    <item android:id="@+id/action_alarm_on"
+        android:title="@string/action_alarm_on"
+        android:showAsAction="never" />
+    <item android:id="@+id/action_alarm_off"
+        android:title="@string/action_alarm_off"
+        android:showAsAction="never" />
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"
         android:showAsAction="never" />

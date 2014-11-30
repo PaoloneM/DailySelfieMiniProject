@@ -12,7 +12,16 @@
     <string name="list_item_date_default">No-time</string>
 
     <string name="action_shoot">Shoot selfie!</string>
+    <string name="action_alarm_on">Turn on alarm</string>
+    <string name="action_alarm_on_message">Notification alarm set</string>
+    <string name="action_alarm_off">Turn off alarm</string>
+    <string name="action_alarm_off_message">Notification alarm disabled</string>
     <string name="action_settings">Settings</string>
     <string name="action_settings_message">Settings panel coming soon</string>
+
+    <string name="alarm_ticker_text">Don\'t forget your daily selfie!</string>
+    <string name="alarm_title_text">Daily Selfie</string>
+    <string name="alarm_body_text">Keep shooting!</string>
+
 
 </resources>

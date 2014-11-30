@@ -8,6 +8,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.util.SparseArray;
@@ -80,7 +81,10 @@ public class DailySelfieMainActivity extends Activity
     private static final long ONE_MONTH = 1000L * 60L * 60L * 24L * 30L;
     // Camera management
     static final int REQUEST_IMAGE_CAPTURE = 1;
-    private static final String LIST_FILE = "DailiySelfiesList.txt" ;
+    private static final String LIST_FILE = "DailiySelfiesList.txt";
+    // Alarm time constants
+    private static final long INITIAL_ALARM_DELAY = 30 * 1000L;
+    protected static final long JITTER = 5000L;
 
     /*****************************************
 	 *                FIELDS                 *
@@ -115,7 +119,7 @@ public class DailySelfieMainActivity extends Activity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
          
-        Log.i(TAG, "DailySelfieMainActivity.onCreate entered");
+        Log.i(TAG, "** DailySelfieMainActivity.onCreate entered");
         
         // Choose which layout use and load it
         loadLayout(mForceTwoPaneMode);
@@ -138,45 +142,53 @@ public class DailySelfieMainActivity extends Activity
     @Override
     public void onStart() {
         super.onStart();
-        Log.i(TAG, "DailySelfieMainActivity.onStart entered");
+        Log.i(TAG, "** DailySelfieMainActivity.onStart entered");
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Log.i(TAG, "DailySelfieMainActivity.onResume entered");
+        Log.i(TAG, "** DailySelfieMainActivity.onResume entered");
+
+        //if (SelfiesContent.mChildList == null || SelfiesContent.mChildList.isEmpty()) {
+
+
+//        }
+
+        //updateDisplayedData();
+
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Log.i(TAG, "DailySelfieMainActivity.onPause entered");
+        Log.i(TAG, "** DailySelfieMainActivity.onPause entered");
         saveSelfieList(SelfiesContent.mChildList);
    }
 
     @Override
     public void onStop() {
         super.onStop();
-        Log.i(TAG, "DailySelfieMainActivity.onStop entered");
+        Log.i(TAG, "** DailySelfieMainActivity.onStop entered");
     }
 
     @Override
     public void onRestart() {
         super.onRestart();
-        Log.i(TAG, "DailySelfieMainActivity.onRestart entered");
+        Log.i(TAG, "** DailySelfieMainActivity.onRestart entered");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.i(TAG, "DailySelfieMainActivity.onDestroy entered");
+        Log.i(TAG, "** DailySelfieMainActivity.onDestroy entered");
     }
 
     // Callback method from  SelfieListFragment.Callbacks}
     @Override
     public void onItemSelected(int i, int i2) {
 
-    	Log.i(TAG, "DailySelfieMainActivity.onItemSelected entered");
+    	Log.i(TAG, "** DailySelfieMainActivity.onItemSelected entered");
 
         showSelfieDetailsNew(mTwoPane, i, i2);
         
@@ -191,7 +203,7 @@ public class DailySelfieMainActivity extends Activity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-        Log.i(TAG, "DailySelfieMainActivity.onCreateOptionsMenu entered");
+        Log.i(TAG, "** DailySelfieMainActivity.onCreateOptionsMenu entered");
 
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.dailyselfiemainactivity_menu, menu);
@@ -203,7 +215,7 @@ public class DailySelfieMainActivity extends Activity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        Log.i(TAG, "DailySelfieMainActivity.onOptionsItemSelected entered");
+        Log.i(TAG, "** DailySelfieMainActivity.onOptionsItemSelected entered");
 
         int id = item.getItemId();
 
@@ -228,6 +240,16 @@ public class DailySelfieMainActivity extends Activity
                 saveSelfieList(SelfiesContent.mChildList);
                 dispatchTakePictureIntent();
                 return true;
+            // Overflow alarm on button
+            case R.id.action_alarm_on:
+                alarmSetup(INITIAL_ALARM_DELAY);
+                Toast.makeText(getApplicationContext(), getString(R.string.action_alarm_on_message), Toast.LENGTH_LONG).show();
+                return true;
+
+            case R.id.action_alarm_off:
+                cancelAlarm();
+                Toast.makeText(getApplicationContext(), getString(R.string.action_alarm_off_message), Toast.LENGTH_LONG).show();
+                return true;
 
             case R.id.action_settings:
                 Toast.makeText(getApplicationContext(), getString(R.string.action_settings_message), Toast.LENGTH_LONG).show();
@@ -243,7 +265,7 @@ public class DailySelfieMainActivity extends Activity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        Log.i(TAG, "DailySelfieMainActivity.onActivityResult entered");
+        Log.i(TAG, "**++++++ DailySelfieMainActivity.onActivityResult entered");
 
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
 
@@ -254,9 +276,11 @@ public class DailySelfieMainActivity extends Activity
                 //mImageView.setImageBitmap(imageBitmap);
             }
 
-            Toast.makeText(getApplicationContext(), "WoW! You look great!!!!", Toast.LENGTH_LONG).show();
+            //Toast.makeText(getApplicationContext(), "WoW! You look great!!!!", Toast.LENGTH_LONG).show();
+            SelfiesContent.mChildList = loadSelfieList();
             createNewSelfie(mSelfieTime, mSelfieLocation, mImageFile);
-            updateDisplaiedData();
+        /*    mSelfieListFragment = (SelfieListFragment) getFragmentManager().findFragmentById(R.id.selfie_fragment_container);
+            updateDisplayedData();   */
             saveSelfieList(SelfiesContent.mChildList);
 
         }
@@ -266,7 +290,7 @@ public class DailySelfieMainActivity extends Activity
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
 
-        Log.i(TAG, "DailySelfieMainActivity.onSaveInstanceState entered");
+        Log.i(TAG, "** DailySelfieMainActivity.onSaveInstanceState entered");
 
 		// save the current foreground feed
         savedInstanceState.putString(SELECTED_SELFIE_KEY, mLastSelectedPosition);
@@ -372,88 +396,6 @@ public class DailySelfieMainActivity extends Activity
      
 	}
 
-    private void createDummyData(ArrayList<SelfieItem> childList) {
-
-        // only add data if no data available, for testing purposes before persistance management
-        if (!childList.isEmpty()) return;
-
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-
-        Date mDate = null;
-
-        try {
-            mDate = format.parse("2014-01-01T01:02:03Z");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        File mFile = new File(DIR, (FILE_RADIX + mDate.toString()));
-
-        childList.add(new SelfieItem(mDate, mFile));
-
-        try {
-            mDate = format.parse("2014-11-01T01:02:03Z");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        mFile = new File(DIR, (FILE_RADIX + mDate.toString()));
-
-        childList.add(new SelfieItem(mDate, mFile));
-
-        try {
-            mDate = format.parse("2014-11-21T01:02:03Z");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        mFile = new File(DIR, (FILE_RADIX + mDate.toString()));
-
-        childList.add(new SelfieItem(mDate, mFile));
-
-        try {
-            mDate = format.parse("2014-10-21T11:02:03Z");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        mFile = new File(DIR, (FILE_RADIX + mDate.toString()));
-
-        childList.add(new SelfieItem(mDate, mFile));
-
-        try {
-            mDate = format.parse("2013-11-21T01:22:00Z");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        mFile = new File(DIR, (FILE_RADIX + mDate.toString()));
-
-        childList.add(new SelfieItem(mDate, mFile));
-
-        try {
-            mDate = format.parse("2014-11-22T08:10:03Z");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        mFile = new File(DIR, (FILE_RADIX + mDate.toString()));
-
-        childList.add(new SelfieItem(mDate, mFile));
-
-        try {
-            mDate = format.parse("2014-11-23T09:39:03Z");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        mFile = new File(DIR, (FILE_RADIX + mDate.toString()));
-
-        childList.add(new SelfieItem(mDate, mFile));
-
-
-    }
-
     private void mapData(SparseArray<SelfiesGroup> groups, ArrayList<SelfieItem> mChildList) {
 
         Log.i(TAG, "DailySelfieMainActivity.mapData entered");
@@ -517,7 +459,7 @@ public class DailySelfieMainActivity extends Activity
                 photoFile = createImageFile();
             } catch (IOException ex) {
                 // Error occurred while creating the File
-                Log.i(TAG, "DailySelfieMainActivity.dispatchTakePictureIntent: unable to create file");
+                Log.i(TAG, "** DailySelfieMainActivity.dispatchTakePictureIntent: unable to create file");
                 ex.printStackTrace();
             }
 
@@ -526,12 +468,12 @@ public class DailySelfieMainActivity extends Activity
 
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
                         Uri.fromFile(photoFile));
-                Log.i(TAG, "DailySelfieMainActivity.dispatchTakePictureIntent: launch intent!");
+                Log.i(TAG, "**++++++ DailySelfieMainActivity.dispatchTakePictureIntent: launch intent!");
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
 
             } else {
 
-                Log.i(TAG, "DailySelfieMainActivity.dispatchTakePictureIntent: file not found");
+                Log.i(TAG, "**DailySelfieMainActivity.dispatchTakePictureIntent: file not found");
 
             }
 
@@ -578,11 +520,19 @@ public class DailySelfieMainActivity extends Activity
     }
 
     // Order selfies data and update display
-    private void updateDisplaiedData() {
+    private void updateDisplayedData() {
 
         Log.i(TAG, "DailySelfieMainActivity.updateDisplayedData entered");
 
+        loadSelfieList();
         mapData(SelfiesContent.mGroups, SelfiesContent.mChildList);
+
+        if (mSelfieListFragment == null) {
+
+            mSelfieListFragment = (SelfieListFragment) getFragmentManager().findFragmentById(R.id.selfie_fragment_container);
+
+        }
+
         mSelfieListFragment.refreshList();
 
     }
@@ -590,7 +540,7 @@ public class DailySelfieMainActivity extends Activity
     // Persistance management
     private void saveSelfieList (ArrayList<SelfieItem> list){
 
-        Log.i(TAG, "********** DailySelfieMainActivity.saveSelfieList entered **********");
+        Log.i(TAG, "DailySelfieMainActivity.saveSelfieList entered");
 
         Gson gson = new GsonBuilder().create();
         JsonArray jsArray = new JsonArray();
@@ -619,7 +569,7 @@ public class DailySelfieMainActivity extends Activity
 
     private ArrayList<SelfieItem> loadSelfieList () {
 
-        Log.i(TAG, "********** DailySelfieMainActivity.loadSelfieList entered *************");
+        Log.i(TAG, "DailySelfieMainActivity.loadSelfieList entered");
 
         ArrayList<SelfieItem> list = new ArrayList<SelfieItem>();
 
@@ -720,23 +670,59 @@ public class DailySelfieMainActivity extends Activity
     }
 
     // Alarm setup
-    private void alarmSetup(int interval){
+    private void alarmSetup(long interval){
 
         // Get the AlarmManager Service
         mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
         // Create PendingIntent to start the AlarmNotificationReceiver
         mNotificationReceiverIntent = new Intent(DailySelfieMainActivity.this,
-                AlarmNotificationReceiver.class);
+                DailySelfieAlarmNotificationReceiver.class);
         mNotificationReceiverPendingIntent = PendingIntent.getBroadcast(
                 DailySelfieMainActivity.this, 0, mNotificationReceiverIntent, 0);
 
         // Create PendingIntent to start the AlarmLoggerReceiver
         mLoggerReceiverIntent = new Intent(DailySelfieMainActivity.this,
-                AlarmLoggerReceiver.class);
+                DailySelfieAlarmLoggerReceiver.class);
         mLoggerReceiverPendingIntent = PendingIntent.getBroadcast(
                 DailySelfieMainActivity.this, 0, mLoggerReceiverIntent, 0);
 
+        mAlarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME,
+                SystemClock.elapsedRealtime() + interval,
+                interval,
+                mNotificationReceiverPendingIntent);
+
+        mAlarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME,
+                SystemClock.elapsedRealtime() + interval
+                        + JITTER,
+                interval,
+                mLoggerReceiverPendingIntent);
+
+
+
+    }
+
+    // Cancel Alarms
+    private void cancelAlarm (){
+        // Get the AlarmManager Service
+        mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+        // Create PendingIntent to start the AlarmNotificationReceiver
+        mNotificationReceiverIntent = new Intent(DailySelfieMainActivity.this,
+                DailySelfieAlarmNotificationReceiver.class);
+        mNotificationReceiverPendingIntent = PendingIntent.getBroadcast(
+                DailySelfieMainActivity.this, 0, mNotificationReceiverIntent, 0);
+
+        // Create PendingIntent to start the AlarmLoggerReceiver
+        mLoggerReceiverIntent = new Intent(DailySelfieMainActivity.this,
+                DailySelfieAlarmLoggerReceiver.class);
+        mLoggerReceiverPendingIntent = PendingIntent.getBroadcast(
+                DailySelfieMainActivity.this, 0, mLoggerReceiverIntent, 0);
+        mAlarmManager.cancel(mNotificationReceiverPendingIntent);
+        mAlarmManager.cancel(mLoggerReceiverPendingIntent);
+
+        Toast.makeText(getApplicationContext(),
+                "Repeating Alarms Cancelled", Toast.LENGTH_LONG).show();
 
     }
     // *** END OF CLASS ***

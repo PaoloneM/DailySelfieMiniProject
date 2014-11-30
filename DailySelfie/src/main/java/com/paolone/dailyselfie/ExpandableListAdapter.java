@@ -115,8 +115,8 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         holder.thumb.setImageBitmap(BitmapFactory.decodeResource(convertView.getResources(), R.drawable.selfie_place_holder));
 
         File selfieFile = mChildObj.getFile();
-        //new LoadSelfieTask(mFragmentContext).execute(selfieFile, holder.thumb);
-        new LoadSelfieTask(mFragmentContext).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, selfieFile, holder.thumb);
+//        new LoadSelfieTask(mFragmentContext).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, selfieFile, holder.thumb);
+        new LoadSelfieTask(mFragmentContext).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, selfieFile, holder.thumb);
         return convertView;
     }
 
