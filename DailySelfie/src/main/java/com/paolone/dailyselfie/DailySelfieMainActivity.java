@@ -62,7 +62,7 @@ import java.util.List;
  */
 
 // TODO: move data management to list adapter
-    
+
 public class DailySelfieMainActivity extends Activity
         implements SelfieListFragment.Callbacks {
 
