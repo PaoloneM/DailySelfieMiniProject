@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.util.ArrayList;
 
 
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
@@ -25,6 +26,9 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
      *****************************************/
     // TAG for logging
     private static final String TAG = "Dailiy_Selfie";
+    // Times
+    private static final long ONE_WEEK = 1000L * 60L * 60L * 24L * 7L;
+    private static final long ONE_MONTH = 1000L * 60L * 60L * 24L * 30L;
 
     /*****************************************
      *                FIELDS                 *
@@ -32,6 +36,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     private final LayoutInflater inf;
     private SparseArray<SelfiesGroup> groups;
+    private ArrayList<SelfieItem> selfies;
 
     private class ViewHolder {
         TextView date;
@@ -45,11 +50,16 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
      *              CONSTRUCTOR              *
      *****************************************/
 
-    public ExpandableListAdapter(SparseArray<SelfiesGroup> groups, Context context) {
-        this.groups = groups;
+
+    public ExpandableListAdapter(Context context) {
+
+        this.selfies = new ArrayList<SelfieItem>();
+        this.groups = mapData(context, selfies);
         inf = LayoutInflater.from(context);
         mFragmentContext = context;
+
     }
+
 
     /*****************************************
      *          ADAPTER LIFECYCLE            *
@@ -147,4 +157,82 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         return true;
     }
 
+
+    /*****************************************
+     *            EXPOSED METHODS            *
+     *****************************************/
+
+    public void addSelfie(SelfieItem newSelfie){
+
+        selfies.add(0, newSelfie);
+        groups = mapData(mFragmentContext, selfies);
+        notifyDataSetChanged();
+
+    }
+
+    public int getSelfiesListSize(){
+
+        return selfies.size();
+
+    }
+
+    public ArrayList<SelfieItem> getSelfiesList(){
+
+        return selfies;
+
+    }
+
+    /*****************************************
+     *            SUPPORT METHODS            *
+     *****************************************/
+
+
+    private SparseArray<SelfiesGroup> mapData(Context context, ArrayList<SelfieItem> mChildList) {
+
+        Log.i(TAG, "DailySelfieMainActivity.mapData entered");
+
+        SparseArray<SelfiesGroup> mappedGroups = new SparseArray<SelfiesGroup>();
+
+        // Create 3 groups
+        SelfiesGroup mLatestSelfies = new SelfiesGroup(context.getString(R.string.recent_selfies_group));
+        SelfiesGroup mMonthSelfies = new SelfiesGroup(context.getString(R.string.last_month_selfies_group));
+        SelfiesGroup mOlderSelfies = new SelfiesGroup(context.getString(R.string.older_selfies_group));
+
+        //if (mChildList == null) return;
+
+        // Scan selfies to assign to the correct group
+        for (SelfieItem child: mChildList){
+
+            long mSelfieAge = child.getSelfieAge();
+
+            if (mSelfieAge > ONE_MONTH) {
+                mOlderSelfies.children.add(mChildList.indexOf(child));
+            } else if (mSelfieAge > ONE_WEEK) {
+                mMonthSelfies.children.add(mChildList.indexOf(child));
+            } else {
+                mLatestSelfies.children.add(mChildList.indexOf(child));
+            }
+        }
+
+        if (mLatestSelfies != null) {
+
+            mappedGroups.append(0, mLatestSelfies);
+
+        }
+
+        if (mMonthSelfies != null) {
+
+            mappedGroups.append(1, mMonthSelfies);
+
+        }
+
+        if (mOlderSelfies != null) {
+
+            mappedGroups.append(2, mOlderSelfies);
+
+        }
+
+        return mappedGroups;
+
+    }
 }

@@ -1,6 +1,7 @@
 package com.paolone.dailyselfie;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Environment;
@@ -66,7 +67,13 @@ public class SelfieListFragment extends Fragment {
 
     private ExpandableListView selfiesExpandableList;
     private View rootView;
+
+    // List adapter
     private ExpandableListAdapter mSelfieListAdaper;
+
+    // fragment context
+    private Context mContext;
+    private DailySelfieStorageManager mStorageManager;
 
     /*****************************************
      *                INTERFACES             *
@@ -148,8 +155,13 @@ public class SelfieListFragment extends Fragment {
         // Get a reference to the ExpandableListView of previously inflated layout and set the
         // adapter and onClick callbacks
         selfiesExpandableList = (ExpandableListView) view.findViewById(R.id.SelfiesExpandableView);
-        mSelfieListAdaper = new ExpandableListAdapter(SelfiesContent.mGroups, view.getContext());
+
+        mContext = view.getContext();
+
+        mSelfieListAdaper = new ExpandableListAdapter(mContext);
+
         selfiesExpandableList.setAdapter(mSelfieListAdaper);
+
         selfiesExpandableList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView expandableListView, View view, int i, int i2, long l) {
@@ -186,8 +198,21 @@ public class SelfieListFragment extends Fragment {
     @Override
     public void onResume(){
         super.onResume();
+
         Log.i(TAG, "**** SelfieListFragment.onResume entered");
-        updateDisplayedData();
+
+        // Create an instance of storage manager to load stored selfies list data
+        mStorageManager = new DailySelfieStorageManager(getString(R.string.storage_dir), getString(R.string.storage_file), DailySelfieStorageManager.EXTERNAL_MEMORY, mContext);
+
+        // Load selfies' list in a local variable
+        ArrayList<SelfieItem> list = mStorageManager.loadSelfieList();
+
+        // Populate adapter content with loaded list
+        if ((list != null) && (mSelfieListAdaper.getSelfiesListSize() == 0)) {
+            for (SelfieItem item: list)
+                mSelfieListAdaper.addSelfie(item);
+        }
+
 
     }
 
@@ -195,6 +220,10 @@ public class SelfieListFragment extends Fragment {
     public void onPause(){
         super.onPause();
         Log.i(TAG, "**** SelfieListFragment.onPause entered");
+
+        // Save list data to persistent storage
+        mStorageManager.saveSelfieList(mSelfieListAdaper.getSelfiesList());
+
 
     }
 
@@ -272,143 +301,6 @@ public class SelfieListFragment extends Fragment {
 
         mActivatedPosition = position;
     }
-
-    private void updateDisplayedData() {
-
-        Log.i(TAG, "DailySelfieMainActivity.updateDisplayedData entered");
-
-        loadSelfieList();
-        mapData(SelfiesContent.mGroups, SelfiesContent.mChildList);
-
-        refreshList();
-
-    }
-
-    private ArrayList<SelfieItem> loadSelfieList () {
-
-        Log.i(TAG, "DailySelfieMainActivity.loadSelfieList entered");
-
-        ArrayList<SelfieItem> list = new ArrayList<SelfieItem>();
-
-        JSONObject jsonObject = new JSONObject();
-
-        try {
-            jsonObject = readFile();
-        } catch (IOException e) {
-            Log.i(TAG, "DailySelfieMainActivity.loadSelfieList: readFile trows file not found error");
-        }
-
-
-        String jsonArray = null;
-        if (jsonObject != null) {
-            jsonArray = null;
-            try {
-                String name = (String) jsonObject.get("Name");
-                String author = (String) jsonObject.get("Author");
-                Log.i(TAG, "DailySelfieMainActivity.loadSelfieList decodes object: Author = " + author + ", name = " + name);
-                jsonArray = (String) jsonObject.get("SelfieList") ;
-                Log.i(TAG, "DailySelfieMainActivity.loadSelfieList decodes object: SelfieList = " + jsonArray.toString());
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            if (jsonArray != null) {
-
-                list = new Gson().fromJson(jsonArray, new TypeToken<List<SelfieItem>>(){}.getType());
-
-            }
-
-        }
-
-        return list;
-
-    }
-
-    private JSONObject readFile() throws IOException {
-
-        Log.i(TAG, "DailySelfieMainActivity.readFile entered");
-
-        JSONObject listToFill = new JSONObject();
-
-        File storageDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES + "/" + FILE_DIR);
-
-        File storageFile = new File(storageDir, LIST_FILE);
-
-        if (!storageFile.exists()) return null;
-
-        FileInputStream fis = new FileInputStream(storageFile);
-
-        BufferedReader br = new BufferedReader(new InputStreamReader(fis));
-        StringBuilder responseStrBuilder = new StringBuilder();
-
-        String mInputStr = br.readLine();
-
-        while (mInputStr != null){
-            responseStrBuilder.append(mInputStr.toString());
-            mInputStr = br.readLine();
-        }
-
-        try {
-            listToFill = new JSONObject(responseStrBuilder.toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        br.close();
-
-        return listToFill;
-
-    }
-
-    private void mapData(SparseArray<SelfiesGroup> groups, ArrayList<SelfieItem> mChildList) {
-
-        Log.i(TAG, "DailySelfieMainActivity.mapData entered");
-
-        groups.clear();
-
-        // Create 3 groups
-        SelfiesGroup mLatestSelfies = new SelfiesGroup(getString(R.string.recent_selfies_group));
-        SelfiesGroup mMonthSelfies = new SelfiesGroup(getString(R.string.last_month_selfies_group));
-        SelfiesGroup mOlderSelfies = new SelfiesGroup(getString(R.string.older_selfies_group));
-
-        if (mChildList == null) return;
-
-        // Scan selfies to assign to the correct group
-        for (SelfieItem child: mChildList){
-
-            long mSelfieAge = child.getSelfieAge();
-
-            if (mSelfieAge > ONE_MONTH) {
-                mOlderSelfies.children.add(mChildList.indexOf(child));
-            } else if (mSelfieAge > ONE_WEEK) {
-                mMonthSelfies.children.add(mChildList.indexOf(child));
-            } else {
-                mLatestSelfies.children.add(mChildList.indexOf(child));
-            }
-        }
-
-        if (mLatestSelfies != null) {
-
-            groups.append(0, mLatestSelfies);
-
-        }
-
-        if (mMonthSelfies != null) {
-
-            groups.append(1, mMonthSelfies);
-
-        }
-
-        if (mOlderSelfies != null) {
-
-            groups.append(2, mOlderSelfies);
-
-        }
-
-    }
-
 
     // *** END OF CLASS ***
 

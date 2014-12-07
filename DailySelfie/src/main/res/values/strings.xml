@@ -23,5 +23,9 @@
     <string name="alarm_title_text">Daily Selfie</string>
     <string name="alarm_body_text">Keep shooting!</string>
 
+    <string name="storage_dir">DailySelfie</string>
+    <string name="storage_file">SelfieList.json</string>
+
+
 
 </resources>

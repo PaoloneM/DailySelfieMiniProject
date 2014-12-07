@@ -62,7 +62,9 @@ public final class R {
         public static final int list_item_place_default=0x7f05000d;
         public static final int older_selfies_group=0x7f05000e;
         public static final int recent_selfies_group=0x7f05000f;
-        public static final int title_selfie_detail=0x7f050010;
+        public static final int storage_dir=0x7f050010;
+        public static final int storage_file=0x7f050011;
+        public static final int title_selfie_detail=0x7f050012;
     }
     public static final class style {
         /** 

@@ -130,12 +130,6 @@ public class DailySelfieMainActivity extends Activity
         // Check layout style
         mTwoPane = isInTwoPaneMode();
 
-        // Create dummy data for testing purposes
-        //createDummyData(SelfiesContent.mChildList);
-
-        SelfiesContent.mChildList = loadSelfieList();
-        mapData(SelfiesContent.mGroups, SelfiesContent.mChildList);
-
         // Manage different layouts based on device size
         fragmentsInit(mTwoPane, savedInstanceState);
 
@@ -153,20 +147,12 @@ public class DailySelfieMainActivity extends Activity
         super.onResume();
         Log.i(TAG, "** DailySelfieMainActivity.onResume entered");
 
-        //if (SelfiesContent.mChildList == null || SelfiesContent.mChildList.isEmpty()) {
-
-
-//        }
-
-        //updateDisplayedData();
-
     }
 
     @Override
     public void onPause() {
         super.onPause();
         Log.i(TAG, "** DailySelfieMainActivity.onPause entered");
-        saveSelfieList(SelfiesContent.mChildList);
    }
 
     @Override
@@ -239,8 +225,6 @@ public class DailySelfieMainActivity extends Activity
 
             // Action bar camera button
             case R.id.action_shoot:
-                //Toast.makeText(getApplicationContext(), "Click!", Toast.LENGTH_LONG).show();
-                saveSelfieList(SelfiesContent.mChildList);
                 dispatchTakePictureIntent();
                 return true;
             // Overflow alarm on button
@@ -279,12 +263,7 @@ public class DailySelfieMainActivity extends Activity
                 //mImageView.setImageBitmap(imageBitmap);
             }
 
-            //Toast.makeText(getApplicationContext(), "WoW! You look great!!!!", Toast.LENGTH_LONG).show();
-            SelfiesContent.mChildList = loadSelfieList();
             createNewSelfie(mSelfieTime, mSelfieLocation, mImageFile);
-        /*    mSelfieListFragment = (SelfieListFragment) getFragmentManager().findFragmentById(R.id.selfie_fragment_container);
-            updateDisplayedData();   */
-            saveSelfieList(SelfiesContent.mChildList);
 
         }
     }
@@ -490,16 +469,23 @@ public class DailySelfieMainActivity extends Activity
         mSelfieTime = new Date();
         mTimeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(mSelfieTime);
         mImageFileName = FILE_RADIX + "_" + mTimeStamp;
-        Log.i(TAG, "DailySelfieMainActivity.createImageFile filename is " + mImageFileName);
+        Log.i(TAG, "DailySelfieMainActivity.createImageFile: filename is " + mImageFileName);
 
         File storageDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES + "/" + FILE_DIR );
+                Environment.DIRECTORY_PICTURES);
         boolean success = true;
         if (!storageDir.exists()) {
             success = storageDir.mkdir();
         }
 
-        Log.i(TAG, "DailySelfieMainActivity.createImageFile storage dir is " + storageDir);
+        storageDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES + "/" + FILE_DIR );
+        success = true;
+        if (!storageDir.exists()) {
+            success = storageDir.mkdir();
+        }
+
+        Log.i(TAG, "DailySelfieMainActivity.createImageFile: storage dir is " + storageDir);
 
         mImageFile = File.createTempFile(
                 mImageFileName,  /* prefix */
@@ -509,6 +495,9 @@ public class DailySelfieMainActivity extends Activity
 
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = "file:" + mImageFile.getAbsolutePath();
+
+        Log.i(TAG, "DailySelfieMainActivity.createImageFile: storage file is " + mCurrentPhotoPath);
+
         return mImageFile;
     }
 
@@ -520,156 +509,6 @@ public class DailySelfieMainActivity extends Activity
         SelfiesContent.addSelfie(selfieTime, selfieLocation, imageFile);
 
         return true;
-    }
-
-    // Order selfies data and update display
-    private void updateDisplayedData() {
-
-        Log.i(TAG, "DailySelfieMainActivity.updateDisplayedData entered");
-
-        loadSelfieList();
-        mapData(SelfiesContent.mGroups, SelfiesContent.mChildList);
-
-        if (mSelfieListFragment == null) {
-
-            mSelfieListFragment = (SelfieListFragment) getFragmentManager().findFragmentById(R.id.selfie_fragment_container);
-
-        }
-
-        mSelfieListFragment.refreshList();
-
-    }
-
-    // Persistance management
-    private void saveSelfieList (ArrayList<SelfieItem> list){
-
-        Log.i(TAG, "DailySelfieMainActivity.saveSelfieList entered");
-
-        Gson gson = new GsonBuilder().create();
-        JsonArray jsArray = new JsonArray();
-
-        if (list != null){
-            jsArray = gson.toJsonTree(list).getAsJsonArray();
-        }
-
-        JSONObject obj = new JSONObject();
-
-        try {
-            obj.put("Name", "paolone");
-            obj.put("Author", "paolone");
-            obj.put("SelfieList", jsArray);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        try {
-            writeFile(obj);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    private ArrayList<SelfieItem> loadSelfieList () {
-
-        Log.i(TAG, "DailySelfieMainActivity.loadSelfieList entered");
-
-        ArrayList<SelfieItem> list = new ArrayList<SelfieItem>();
-
-        JSONObject jsonObject = new JSONObject();
-
-        try {
-            jsonObject = readFile();
-        } catch (IOException e) {
-            Log.i(TAG, "DailySelfieMainActivity.loadSelfieList: readFile trows file not found error");
-        }
-
-
-        String jsonArray = null;
-        if (jsonObject != null) {
-            jsonArray = null;
-            try {
-                String name = (String) jsonObject.get("Name");
-                String author = (String) jsonObject.get("Author");
-                Log.i(TAG, "DailySelfieMainActivity.loadSelfieList decodes object: Author = " + author + ", name = " + name);
-                jsonArray = (String) jsonObject.get("SelfieList") ;
-                Log.i(TAG, "DailySelfieMainActivity.loadSelfieList decodes object: SelfieList = " + jsonArray.toString());
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            if (jsonArray != null) {
-
-                list = new Gson().fromJson(jsonArray, new TypeToken<List<SelfieItem>>(){}.getType());
-
-            }
-
-        }
-
-        return list;
-
-    }
-
-    private void writeFile(JSONObject listToSave) throws FileNotFoundException {
-
-        Log.i(TAG, "DailySelfieMainActivity.writeFile entered");
-
-        File storageDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES + "/" + FILE_DIR );
-        boolean success = true;
-        if (!storageDir.exists()) {
-            success = storageDir.mkdir();
-        }
-
-        File storageFile = new File(storageDir, LIST_FILE);
-
-        FileOutputStream fos = new FileOutputStream(storageFile);
-
-        PrintWriter pw = new PrintWriter(new BufferedWriter(
-                new OutputStreamWriter(fos)));
-
-        pw.write(listToSave.toString());
-
-        pw.close();
-
-    }
-
-    private JSONObject readFile() throws IOException {
-
-        Log.i(TAG, "DailySelfieMainActivity.readFile entered");
-
-        JSONObject listToFill = new JSONObject();
-
-        File storageDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES + "/" + FILE_DIR );
-
-        File storageFile = new File(storageDir, LIST_FILE);
-
-        if (!storageFile.exists()) return null;
-
-        FileInputStream fis = new FileInputStream(storageFile);
-
-        BufferedReader br = new BufferedReader(new InputStreamReader(fis));
-        StringBuilder responseStrBuilder = new StringBuilder();
-
-        String mInputStr = br.readLine();
-
-        while (mInputStr != null){
-            responseStrBuilder.append(mInputStr.toString());
-            mInputStr = br.readLine();
-        }
-
-        try {
-            listToFill = new JSONObject(responseStrBuilder.toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        br.close();
-
-        return listToFill;
-
     }
 
     // Alarm setup
