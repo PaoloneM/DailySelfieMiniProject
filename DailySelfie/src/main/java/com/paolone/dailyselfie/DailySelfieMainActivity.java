@@ -75,17 +75,7 @@ public class DailySelfieMainActivity extends Activity
 	private static final String SELECTED_SELFIE_KEY = "16f38740-6d99-11e4-9803-0800200c9a66";
 	// Saved Instance key for the action bar home button back capability flag (UUID)
 	private static final String ACTIONBAR_DISPLAY_OPTIONS = "4fdad5f0-6dd9-11e4-9803-0800200c9a66";
-    // File paths
-    private static final String DIR = MediaStore.Images.Media.DATA;
-    private static final String FILE_RADIX = "Selfie_";
-    private static final String FILE_DIR = "DailySelfie";
-    // Times
-    private static final long ONE_WEEK = 1000L * 60L * 60L * 24L * 7L;
-    private static final long ONE_MONTH = 1000L * 60L * 60L * 24L * 30L;
-    // Camera management
-    static final int REQUEST_IMAGE_CAPTURE = 1;
-    private static final String LIST_FILE = "DailiySelfiesList.txt";
-    // Alarm time constants
+     // Alarm time constants
     private static final long INITIAL_ALARM_DELAY = 30 * 1000L;
     protected static final long JITTER = 5000L;
 
@@ -102,12 +92,7 @@ public class DailySelfieMainActivity extends Activity
     // currently selected item pointer
     private String mLastSelectedPosition = null;
     // Picture related fields
-    private String mCurrentPhotoPath;
-    private String mImageFileName;
-    private String mTimeStamp;
-    private Date mSelfieTime;
-    private Location mSelfieLocation = null;
-    private File mImageFile;
+     private Location mSelfieLocation = null;
     private AlarmManager mAlarmManager;
     private Intent mNotificationReceiverIntent;
     private PendingIntent mNotificationReceiverPendingIntent;
@@ -225,7 +210,10 @@ public class DailySelfieMainActivity extends Activity
 
             // Action bar camera button
             case R.id.action_shoot:
-                dispatchTakePictureIntent();
+                if (mSelfieListFragment == null) {
+                    mSelfieListFragment = (SelfieListFragment) (getFragmentManager().findFragmentById(R.id.selfie_fragment_container));
+                }
+                mSelfieListFragment.shootSelfie();
                 return true;
             // Overflow alarm on button
             case R.id.action_alarm_on:
@@ -248,25 +236,6 @@ public class DailySelfieMainActivity extends Activity
 
     }
 
-    // Camera activity result callback
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        Log.i(TAG, "**++++++ DailySelfieMainActivity.onActivityResult entered");
-
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-
-            if (data != null) {
-
-                Bundle extras = data.getExtras();
-                Bitmap imageBitmap = (Bitmap) extras.get("data");
-                //mImageView.setImageBitmap(imageBitmap);
-            }
-
-            createNewSelfie(mSelfieTime, mSelfieLocation, mImageFile);
-
-        }
-    }
 
     // Saved Instance Management
     @Override
@@ -378,138 +347,8 @@ public class DailySelfieMainActivity extends Activity
      
 	}
 
-    private void mapData(SparseArray<SelfiesGroup> groups, ArrayList<SelfieItem> mChildList) {
 
-        Log.i(TAG, "DailySelfieMainActivity.mapData entered");
 
-        groups.clear();
-
-    	// Create 3 groups
-        SelfiesGroup mLatestSelfies = new SelfiesGroup(getString(R.string.recent_selfies_group));
-        SelfiesGroup mMonthSelfies = new SelfiesGroup(getString(R.string.last_month_selfies_group));
-        SelfiesGroup mOlderSelfies = new SelfiesGroup(getString(R.string.older_selfies_group));
-
-        if (mChildList == null) return;
-
-        // Scan selfies to assign to the correct group
-    	for (SelfieItem child: mChildList){
-
-            long mSelfieAge = child.getSelfieAge();
-
-            if (mSelfieAge > ONE_MONTH) {
-    			mOlderSelfies.children.add(mChildList.indexOf(child));
-    		} else if (mSelfieAge > ONE_WEEK) {
-                mMonthSelfies.children.add(mChildList.indexOf(child));
-            } else {
-                mLatestSelfies.children.add(mChildList.indexOf(child));
-            }
-    	}
-
-        if (mLatestSelfies != null) {
-
-            groups.append(0, mLatestSelfies);
-
-        }
-
-        if (mMonthSelfies != null) {
-
-            groups.append(1, mMonthSelfies);
-
-        }
-
-        if (mOlderSelfies != null) {
-
-            groups.append(2, mOlderSelfies);
-
-        }
-
-    }
-
-    // Dispatch intent for taking pictures
-    private void dispatchTakePictureIntent() {
-
-        Log.i(TAG, "DailySelfieMainActivity.dispatchTakePictureIntent entered");
-
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            // Create the File where the photo should go
-            File photoFile = null;
-
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                // Error occurred while creating the File
-                Log.i(TAG, "** DailySelfieMainActivity.dispatchTakePictureIntent: unable to create file");
-                ex.printStackTrace();
-            }
-
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-                        Uri.fromFile(photoFile));
-                Log.i(TAG, "**++++++ DailySelfieMainActivity.dispatchTakePictureIntent: launch intent!");
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-
-            } else {
-
-                Log.i(TAG, "**DailySelfieMainActivity.dispatchTakePictureIntent: file not found");
-
-            }
-
-        }
-    }
-
-    private File createImageFile() throws IOException {
-
-        Log.i(TAG, "DailySelfieMainActivity.createImageFile entered");
-        // Create an image file name
-        mSelfieTime = new Date();
-        mTimeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(mSelfieTime);
-        mImageFileName = FILE_RADIX + "_" + mTimeStamp;
-        Log.i(TAG, "DailySelfieMainActivity.createImageFile: filename is " + mImageFileName);
-
-        File storageDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES);
-        boolean success = true;
-        if (!storageDir.exists()) {
-            success = storageDir.mkdir();
-        }
-
-        storageDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES + "/" + FILE_DIR );
-        success = true;
-        if (!storageDir.exists()) {
-            success = storageDir.mkdir();
-        }
-
-        Log.i(TAG, "DailySelfieMainActivity.createImageFile: storage dir is " + storageDir);
-
-        mImageFile = File.createTempFile(
-                mImageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
-
-        // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = "file:" + mImageFile.getAbsolutePath();
-
-        Log.i(TAG, "DailySelfieMainActivity.createImageFile: storage file is " + mCurrentPhotoPath);
-
-        return mImageFile;
-    }
-
-    // Create new data item
-    private boolean createNewSelfie(Date selfieTime, Location selfieLocation, File imageFile){
-
-        Log.i(TAG, "DailySelfieMainActivity.createNewSelfie entered");
-
-        SelfiesContent.addSelfie(selfieTime, selfieLocation, imageFile);
-
-        return true;
-    }
 
     // Alarm setup
     private void alarmSetup(long interval){

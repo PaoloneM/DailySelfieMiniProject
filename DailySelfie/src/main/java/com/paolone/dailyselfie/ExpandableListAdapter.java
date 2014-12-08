@@ -1,7 +1,6 @@
 package com.paolone.dailyselfie;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -9,11 +8,9 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -52,6 +49,8 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
 
     public ExpandableListAdapter(Context context) {
+
+        Log.i(TAG, "****** ExpandableListAdapter constructor entered");
 
         this.selfies = new ArrayList<SelfieItem>();
         this.groups = mapData(context, selfies);
@@ -119,13 +118,12 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         }
 
         Integer mChildIndex = (Integer) getChild(groupPosition, childPosition);
-        SelfieItem mChildObj = SelfiesContent.mChildList.get(mChildIndex);
+        SelfieItem mChildObj = selfies.get(mChildIndex);
         String mText = mChildObj.getDate().toString();
         holder.date.setText(mText);
         holder.thumb.setImageBitmap(BitmapFactory.decodeResource(convertView.getResources(), R.drawable.selfie_place_holder));
 
         File selfieFile = mChildObj.getFile();
-//        new LoadSelfieTask(mFragmentContext).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, selfieFile, holder.thumb);
         new LoadSelfieTask(mFragmentContext).executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, selfieFile, holder.thumb);
         return convertView;
     }
@@ -166,6 +164,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
         selfies.add(0, newSelfie);
         groups = mapData(mFragmentContext, selfies);
+
         notifyDataSetChanged();
 
     }
@@ -182,6 +181,12 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     }
 
+    public void clearSelfielist(){
+
+        selfies.clear();
+
+    }
+
     /*****************************************
      *            SUPPORT METHODS            *
      *****************************************/
@@ -189,7 +194,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     private SparseArray<SelfiesGroup> mapData(Context context, ArrayList<SelfieItem> mChildList) {
 
-        Log.i(TAG, "DailySelfieMainActivity.mapData entered");
+        Log.i(TAG, "ExpandableListAdapter.mapData entered");
 
         SparseArray<SelfiesGroup> mappedGroups = new SparseArray<SelfiesGroup>();
 

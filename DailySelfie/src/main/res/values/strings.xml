@@ -25,6 +25,7 @@
 
     <string name="storage_dir">DailySelfie</string>
     <string name="storage_file">SelfieList.json</string>
+    <string name="selfie_file_radix">Selfie</string>
 
 
 

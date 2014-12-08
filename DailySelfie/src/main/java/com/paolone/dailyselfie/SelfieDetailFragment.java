@@ -63,9 +63,12 @@ public class SelfieDetailFragment extends Fragment {
             // arguments.
             int argumentGroup = getArguments().getInt(ARG_GROUP_ID);
             int argumentChild = getArguments().getInt(ARG_CHILD_ID);
-            int mChildId =SelfiesContent.mGroups.get(argumentGroup).children.get(argumentChild);
+            // TODO: pass correct args
+           // int mChildId =SelfiesContent.mGroups.get(argumentGroup).children.get(argumentChild);
+            int mChildId = 0;
             // Save filename of image file
-            mDetailFile = SelfiesContent.mChildList.get(mChildId).getFile();
+            //mDetailFile = SelfiesContent.mChildList.get(mChildId).getFile();
+            mDetailFile = new File("");
         }
 
     }

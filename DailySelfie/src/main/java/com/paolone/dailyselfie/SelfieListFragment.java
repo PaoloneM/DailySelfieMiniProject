@@ -2,32 +2,26 @@ package com.paolone.dailyselfie;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
 
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.paolone.dailyselfie.dummy.DummyContent;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 
 /**
  * A list fragment representing a list of Selfies. This fragment
@@ -49,11 +43,9 @@ public class SelfieListFragment extends Fragment {
     // The serialization (saved instance state) Bundle key representing the activated item position.
     // Only used on tablets.
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
-    private static final String FILE_DIR = "DailySelfie";
-    private static final String LIST_FILE = "DailiySelfiesList.txt";
-    // Times
-    private static final long ONE_WEEK = 1000L * 60L * 60L * 24L * 7L;
-    private static final long ONE_MONTH = 1000L * 60L * 60L * 24L * 30L;
+    // Camera management
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+
 
     /*****************************************
      *                FIELDS                 *
@@ -74,6 +66,14 @@ public class SelfieListFragment extends Fragment {
     // fragment context
     private Context mContext;
     private DailySelfieStorageManager mStorageManager;
+
+    // Selfie data
+    private Date mSelfieTime;
+    private String mTimeStamp;
+    private String mImageFileName;
+    private File mImageFile;
+    private Location mSelfieLocation = null;
+
 
     /*****************************************
      *                INTERFACES             *
@@ -179,6 +179,8 @@ public class SelfieListFragment extends Fragment {
             }
         });
 
+        Log.i(TAG, "**** SelfieListFragment.onViewCreated: mSelfieListAdaper = " + mSelfieListAdaper.toString());
+
     }
 
     @Override
@@ -193,6 +195,24 @@ public class SelfieListFragment extends Fragment {
         super.onStart();
         Log.i(TAG, "**** SelfieListFragment.onStart entered");
 
+        // Create an instance of storage manager to load stored selfies list data
+        mStorageManager = new DailySelfieStorageManager(getString(R.string.storage_dir), getString(R.string.storage_file), DailySelfieStorageManager.EXTERNAL_MEMORY, mContext);
+        Log.i(TAG, "**** SelfieListFragment.onStart: mStorageManager = " + mStorageManager.toString());
+
+        // Load selfies' list in a local variable
+        ArrayList<SelfieItem> list = mStorageManager.loadSelfieList();
+        Log.i(TAG, "**** SelfieListFragment.onStart: list size = " + list.size());
+
+        // Populate adapter content with loaded list
+        if (list != null) {
+            Log.i(TAG, "**** SelfieListFragment.onStart: populate adapter's list");
+            mSelfieListAdaper.clearSelfielist();
+            for (SelfieItem item: list)
+                mSelfieListAdaper.addSelfie(item);
+        }
+
+        Log.i(TAG, "**** SelfieListFragment.onStart: mSelfieListAdaper = " + mSelfieListAdaper.toString());
+
     }
 
     @Override
@@ -200,19 +220,6 @@ public class SelfieListFragment extends Fragment {
         super.onResume();
 
         Log.i(TAG, "**** SelfieListFragment.onResume entered");
-
-        // Create an instance of storage manager to load stored selfies list data
-        mStorageManager = new DailySelfieStorageManager(getString(R.string.storage_dir), getString(R.string.storage_file), DailySelfieStorageManager.EXTERNAL_MEMORY, mContext);
-
-        // Load selfies' list in a local variable
-        ArrayList<SelfieItem> list = mStorageManager.loadSelfieList();
-
-        // Populate adapter content with loaded list
-        if ((list != null) && (mSelfieListAdaper.getSelfiesListSize() == 0)) {
-            for (SelfieItem item: list)
-                mSelfieListAdaper.addSelfie(item);
-        }
-
 
     }
 
@@ -262,9 +269,33 @@ public class SelfieListFragment extends Fragment {
 
         Log.i(TAG, "**** SelfieListFragment.onSaveInstanceState entered");
 
+        // TODO: save selfie item to be created
         if (mActivatedPosition != ListView.INVALID_POSITION) {
             // Serialize and persist the activated item position.
             outState.putInt(STATE_ACTIVATED_POSITION, mActivatedPosition);
+        }
+    }
+
+    // Camera activity result callback
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        Log.i(TAG, "****++++ SelfieListFragment.onActivityResult entered");
+        Log.i(TAG, "**** SelfieListFragment.onActivityResult: mSelfieListAdaper = " + mSelfieListAdaper.toString());
+
+
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+
+            if (data != null) {
+
+                Bundle extras = data.getExtras();
+                Bitmap imageBitmap = (Bitmap) extras.get("data");
+            }
+
+            createNewSelfie(mSelfieTime, mSelfieLocation, mImageFile);
+
+            mStorageManager.saveSelfieList(mSelfieListAdaper.getSelfiesList());
+
         }
     }
 
@@ -272,12 +303,15 @@ public class SelfieListFragment extends Fragment {
      *           EXPOSED METHODS             *
      *****************************************/
 
-    public boolean refreshList(){
+    public void shootSelfie(){
 
-        mSelfieListAdaper.notifyDataSetChanged();
-        return true;
+        mStorageManager.saveSelfieList(mSelfieListAdaper.getSelfiesList());
+
+        dispatchTakePictureIntent();
 
     }
+
+
     /*****************************************
      *           SUPPORT METHODS             *
      *****************************************/
@@ -302,6 +336,100 @@ public class SelfieListFragment extends Fragment {
         mActivatedPosition = position;
     }
 
+    // Dispatch intent for taking pictures
+    private void dispatchTakePictureIntent() {
+
+        Log.i(TAG, "SelfieListFragment.dispatchTakePictureIntent entered");
+
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        File photoFile = null;
+
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(mContext.getPackageManager()) != null) {
+            // Create the File where the photo should go
+
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+                Log.i(TAG, "** SelfieListFragment.dispatchTakePictureIntent: unable to create file");
+                ex.printStackTrace();
+            }
+
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+                        Uri.fromFile(photoFile));
+                Log.i(TAG, "****++++ SelfieListFragment.dispatchTakePictureIntent: launch intent!");
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+
+            } else {
+
+                Log.i(TAG, "**SelfieListFragment.dispatchTakePictureIntent: file not found");
+
+            }
+
+        }
+
+    }
+
+    private File createImageFile() throws IOException {
+
+        Log.i(TAG, "SelfieListFragment.createImageFile entered");
+        // Create an image file name
+        mSelfieTime = new Date();
+        mTimeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(mSelfieTime);
+        mImageFileName = mContext.getString(R.string.selfie_file_radix) + "_" + mTimeStamp;
+        Log.i(TAG, "SelfieListFragment.createImageFile: filename is " + mImageFileName);
+
+        File storageDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES);
+        boolean success = true;
+        if (!storageDir.exists()) {
+            success = storageDir.mkdir();
+        }
+
+        storageDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES + "/" + mContext.getString(R.string.storage_dir) );
+        success = true;
+        if (!storageDir.exists()) {
+            success = storageDir.mkdir();
+        }
+
+        Log.i(TAG, "SelfieListFragment.createImageFile: storage dir is " + storageDir);
+
+        mImageFile = File.createTempFile(
+                mImageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        String mCurrentPhotoPath = "file:" + mImageFile.getAbsolutePath();
+
+        Log.i(TAG, "SelfieListFragment.createImageFile: storage file is " + mCurrentPhotoPath);
+
+        return mImageFile;
+
+    }
+
+    // Create new data item
+    private boolean createNewSelfie(Date selfieTime, Location selfieLocation, File imageFile){
+
+        Log.i(TAG, "SelfieListFragment.createNewSelfie entered");
+
+        SelfieItem newSelfie = new SelfieItem(selfieTime, selfieLocation, imageFile);
+
+        Log.i(TAG, "SelfieListFragment.createNewSelfie: mSelfieListAdaper = " + mSelfieListAdaper.toString());
+
+        Log.i(TAG, "SelfieListFragment.createNewSelfie: newSelfie = " + newSelfie.getDate().toString());
+
+        mSelfieListAdaper.addSelfie(newSelfie);
+
+        return true;
+    }
     // *** END OF CLASS ***
 
 }

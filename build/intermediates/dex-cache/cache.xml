@@ -1,29 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<pre-dex-items>
+<items version="2" >
 
     <item
-        dex="/Users/pmorgano/Documents/CorsoAndroid/DailySelfieMiniProject/DailySelfie/build/intermediates/pre-dexed/debug/internal_impl-21.0.2-9e965bc02bc077c8924b6ca97af6a4b736fb9244.jar"
-        jar="/Users/pmorgano/Documents/CorsoAndroid/DailySelfieMiniProject/DailySelfie/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.2/libs/internal_impl-21.0.2.jar"
+        jar="/Users/paolomorgano/Development/Projects/DailySelfieMiniProject/DailySelfie/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.2/classes.jar"
         jumboMode="false"
         revision="20.0.0"
-        sha1="962e8b12569c56dbdcf8367eb4eac8bb129cd18f"/>
+        sha1="d1bf02de1c56d942e7a9d093b8610ba1ef4128e3">
+        <dex dex="/Users/paolomorgano/Development/Projects/DailySelfieMiniProject/DailySelfie/build/intermediates/pre-dexed/debug/classes-8f97d720e07e1b5c4b7fd3b2a9f3093869c74ed5.jar" />
+    </item>
     <item
-        dex="/Users/pmorgano/Documents/CorsoAndroid/DailySelfieMiniProject/DailySelfie/build/intermediates/pre-dexed/debug/classes-57caa0dfa3fb9c6efa9a7f5b8059c04cf130045f.jar"
-        jar="/Users/pmorgano/Documents/CorsoAndroid/DailySelfieMiniProject/DailySelfie/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.2/classes.jar"
+        jar="/Users/paolomorgano/Development/adt-bundle-mac-x86_64-20140702/sdk/extras/android/m2repository/com/android/support/support-annotations/21.0.2/support-annotations-21.0.2.jar"
         jumboMode="false"
         revision="20.0.0"
-        sha1="d1bf02de1c56d942e7a9d093b8610ba1ef4128e3"/>
+        sha1="99373741f99a0556ee293c41e8faa1ca3ae8a4e6">
+        <dex dex="/Users/paolomorgano/Development/Projects/DailySelfieMiniProject/DailySelfie/build/intermediates/pre-dexed/debug/support-annotations-21.0.2-f90e962d21a4d88e9a514c04a845563edf5bad47.jar" />
+    </item>
     <item
-        dex="/Users/pmorgano/Documents/CorsoAndroid/DailySelfieMiniProject/DailySelfie/build/intermediates/pre-dexed/debug/support-annotations-21.0.2-9222376640047a7751c53dda0e105f6a96618e40.jar"
-        jar="/Users/pmorgano/Google Drive/Lavoro/FF3D/Progetti/Android/adt-bundle-mac-x86_64-20131030/sdk/extras/android/m2repository/com/android/support/support-annotations/21.0.2/support-annotations-21.0.2.jar"
+        jar="/Users/paolomorgano/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.3.1/ecb6e1f8e4b0e84c4b886c2f14a1500caf309757/gson-2.3.1.jar"
         jumboMode="false"
         revision="20.0.0"
-        sha1="99373741f99a0556ee293c41e8faa1ca3ae8a4e6"/>
+        sha1="ecb6e1f8e4b0e84c4b886c2f14a1500caf309757">
+        <dex dex="/Users/paolomorgano/Development/Projects/DailySelfieMiniProject/DailySelfie/build/intermediates/pre-dexed/debug/gson-2.3.1-a9422b7c640af389ffbd45ba66767f24812bfed4.jar" />
+    </item>
     <item
-        dex="/Users/pmorgano/Documents/CorsoAndroid/DailySelfieMiniProject/DailySelfie/build/intermediates/pre-dexed/debug/gson-2.3.1-61806ff5b734b35f6df496f6471959ab8bac8071.jar"
-        jar="/Users/pmorgano/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.3.1/ecb6e1f8e4b0e84c4b886c2f14a1500caf309757/gson-2.3.1.jar"
+        jar="/Users/paolomorgano/Development/Projects/DailySelfieMiniProject/DailySelfie/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.2/libs/internal_impl-21.0.2.jar"
         jumboMode="false"
         revision="20.0.0"
-        sha1="ecb6e1f8e4b0e84c4b886c2f14a1500caf309757"/>
+        sha1="962e8b12569c56dbdcf8367eb4eac8bb129cd18f">
+        <dex dex="/Users/paolomorgano/Development/Projects/DailySelfieMiniProject/DailySelfie/build/intermediates/pre-dexed/debug/internal_impl-21.0.2-28a75a8858027562e8c648fa05b06222c197ad9a.jar" />
+    </item>
 
-</pre-dex-items>
+</items>
