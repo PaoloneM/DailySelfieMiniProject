@@ -43,6 +43,7 @@ public class SelfieListFragment extends Fragment {
     // The serialization (saved instance state) Bundle key representing the activated item position.
     // Only used on tablets.
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
+    private static final String NEXT_SELFIE_KEY = "NextSelfie";
     // Camera management
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
@@ -73,6 +74,7 @@ public class SelfieListFragment extends Fragment {
     private String mImageFileName;
     private File mImageFile;
     private Location mSelfieLocation = null;
+    private SelfieItem mNextSelfie;
 
 
     /*****************************************
@@ -147,6 +149,12 @@ public class SelfieListFragment extends Fragment {
         if (savedInstanceState != null
                 && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
             setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
+        }
+
+        // Restore the previously serialized activated item position.
+        if (savedInstanceState != null
+                && savedInstanceState.containsKey(NEXT_SELFIE_KEY)) {
+            mNextSelfie = savedInstanceState.getParcelable(NEXT_SELFIE_KEY);
         }
 
         // Ensures that action bar's home button doesn't show back capabilities (used in detail view)
@@ -274,6 +282,11 @@ public class SelfieListFragment extends Fragment {
             // Serialize and persist the activated item position.
             outState.putInt(STATE_ACTIVATED_POSITION, mActivatedPosition);
         }
+
+        if (mNextSelfie != null){
+            outState.putParcelable(NEXT_SELFIE_KEY, mNextSelfie);
+        }
+
     }
 
     // Camera activity result callback
@@ -292,7 +305,7 @@ public class SelfieListFragment extends Fragment {
                 Bitmap imageBitmap = (Bitmap) extras.get("data");
             }
 
-            createNewSelfie(mSelfieTime, mSelfieLocation, mImageFile);
+            createNewSelfie(mNextSelfie.getDate(), mNextSelfie.getLocation(), mNextSelfie.getFile());
 
             mStorageManager.saveSelfieList(mSelfieListAdaper.getSelfiesList());
 
@@ -410,6 +423,8 @@ public class SelfieListFragment extends Fragment {
         String mCurrentPhotoPath = "file:" + mImageFile.getAbsolutePath();
 
         Log.i(TAG, "SelfieListFragment.createImageFile: storage file is " + mCurrentPhotoPath);
+
+        mNextSelfie = new SelfieItem(mSelfieTime,mImageFile);
 
         return mImageFile;
 
