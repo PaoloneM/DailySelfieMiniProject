@@ -85,14 +85,14 @@ public class SelfieListFragment extends Fragment {
     // This mechanism allows activities to be notified of item selections.
     public interface Callbacks {
         // Callback for when an item has been selected.
-        public void onItemSelected(int i, int i2);
+        public void onItemSelected(String filePath);
     }
 
     // A dummy implementation of the {@link Callbacks} interface that does nothing.
     // Used only when this fragment is not attached to an activity.
     private static Callbacks sDummyCallbacks = new Callbacks() {
         @Override
-        public void onItemSelected(int i, int i2) {
+        public void onItemSelected(String filePath) {
         }
     };
 
@@ -182,7 +182,8 @@ public class SelfieListFragment extends Fragment {
                 // Notify the active callbacks interface (the activity, if the
                 // fragment is attached to one) that an item has been selected.
                 //mCallbacks.onItemSelected(DummyContent.ITEMS.get(position).id);
-                mCallbacks.onItemSelected(i, i2);
+                String filePath = mSelfieListAdaper.getSelfie((Integer) mSelfieListAdaper.getChild(i, i2)).getFile().getAbsolutePath();
+                mCallbacks.onItemSelected(filePath);
                 return false;
             }
         });

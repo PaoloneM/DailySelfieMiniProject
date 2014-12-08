@@ -32,8 +32,7 @@ public class SelfieDetailFragment extends Fragment {
 	private static final String TAG = "Dailiy_Selfie";
 
 	// The fragment argument representing the item ID that this fragment
-    public static final String ARG_GROUP_ID = "group_id";
-    public static final String ARG_CHILD_ID = "child_id";
+    public static final String ARG_FILE_PATH = "group_id";
 
     /*****************************************
      *                FIELDS                 *
@@ -58,17 +57,12 @@ public class SelfieDetailFragment extends Fragment {
 
         Log.i(TAG, "SelfieDetailFragment.onCreate entered");
         
-        if (getArguments().containsKey(ARG_GROUP_ID)) {
+        if (getArguments().containsKey(ARG_FILE_PATH)) {
             // Load the content specified by the fragment
             // arguments.
-            int argumentGroup = getArguments().getInt(ARG_GROUP_ID);
-            int argumentChild = getArguments().getInt(ARG_CHILD_ID);
-            // TODO: pass correct args
-           // int mChildId =SelfiesContent.mGroups.get(argumentGroup).children.get(argumentChild);
-            int mChildId = 0;
+            String argumentFilePath = getArguments().getString(ARG_FILE_PATH);
             // Save filename of image file
-            //mDetailFile = SelfiesContent.mChildList.get(mChildId).getFile();
-            mDetailFile = new File("");
+            mDetailFile = new File(argumentFilePath);
         }
 
     }

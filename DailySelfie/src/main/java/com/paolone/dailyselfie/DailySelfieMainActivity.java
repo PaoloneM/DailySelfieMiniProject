@@ -160,11 +160,11 @@ public class DailySelfieMainActivity extends Activity
 
     // Callback method from  SelfieListFragment.Callbacks}
     @Override
-    public void onItemSelected(int i, int i2) {
+    public void onItemSelected(String filePath) {
 
     	Log.i(TAG, "** DailySelfieMainActivity.onItemSelected entered");
 
-        showSelfieDetailsNew(mTwoPane, i, i2);
+        showSelfieDetailsNew(mTwoPane, filePath);
         
         if (!mTwoPane) {
             getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -309,7 +309,7 @@ public class DailySelfieMainActivity extends Activity
 	
 
 	// depending on layout style, changes foreground fragment and updates its content 
-	private void showSelfieDetailsNew(boolean mIsInTwoPanesMode, int groupId, int childId) {
+	private void showSelfieDetailsNew(boolean mIsInTwoPanesMode, String filePath) {
 		
 		Log.i(TAG, "DailySelfieMainActivity.showSelfieDetailsNew entered");
 
@@ -321,8 +321,7 @@ public class DailySelfieMainActivity extends Activity
 		
 		// Set arguments for the new fragment
         Bundle arguments = new Bundle();
-        arguments.putInt(SelfieDetailFragment.ARG_GROUP_ID, groupId);
-        arguments.putInt(SelfieDetailFragment.ARG_CHILD_ID, childId);
+        arguments.putString(SelfieDetailFragment.ARG_FILE_PATH, filePath);
         mSelfieDetailFragment.setArguments(arguments);
         
         // Begin fragment transaction
@@ -343,7 +342,8 @@ public class DailySelfieMainActivity extends Activity
 		// execute transaction now
 	    getFragmentManager().executePendingTransactions();
 
-        mLastSelectedPosition = (groupId + "-" + childId);
+        // TODO: handle selection persistence
+        //mLastSelectedPosition = (groupId + "-" + childId);
      
 	}
 

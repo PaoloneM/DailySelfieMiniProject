@@ -81,6 +81,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
+
         return groups.get(groupPosition).children.get(childPosition);
     }
 
@@ -185,6 +186,11 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
         selfies.clear();
 
+    }
+
+    public SelfieItem getSelfie(int pos){
+
+        return selfies.get(pos);
     }
 
     /*****************************************
